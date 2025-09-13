@@ -4,910 +4,737 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canvas Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f0f8ff 0%, #e6f2ff 100%);
-            min-height: 100vh;
-            color: #1f2937;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #3b82f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            border: 2px solid #dbeafe;
-        }
-
-        .header-text h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-        }
-
-        .header-text p {
-            color: #6b7280;
-        }
-
-        .bell-button {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #d1d5db;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .bell-button::after {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            position: absolute;
-            top: -2px;
-            right: -2px;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .summary-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 1rem;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary-card-content {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .icon-blue { color: #3b82f6; }
-        .icon-green { color: #10b981; }
-        .icon-purple { color: #8b5cf6; }
-        .icon-orange { color: #f59e0b; }
-
-        .summary-text h3 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-        }
-
-        .summary-text p {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .text-blue { color: #3b82f6; }
-        .text-green { color: #10b981; }
-        .text-purple { color: #8b5cf6; }
-        .text-orange { color: #f59e0b; }
-
-        .widgets-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .widget-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .widget-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            font-size: 1.125rem;
-            font-weight: 600;
+        .collapsible-content.expanded {
+            max-height: 500px;
         }
 
         .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #10b981;
-            transition: width 0.3s ease;
-        }
-
-        .badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .badge-green {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .course-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
-        }
-
-        .course-card:hover {
-            background: rgba(255, 255, 255, 0.95);
-            transform: translateY(-1px);
-        }
-
-        .course-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .course-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .course-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .dot-green { background: #10b981; }
-        .dot-blue { background: #3b82f6; }
-        .dot-purple { background: #8b5cf6; }
-        .dot-orange { background: #f59e0b; }
-        .dot-red { background: #ef4444; }
-
-        .course-name {
-            font-weight: 600;
-            font-size: 0.875rem;
-            line-height: 1.2;
-        }
-
-        .course-code {
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-
-        .course-grade {
-            text-align: right;
-        }
-
-        .grade-badge {
-            padding: 0.25rem 0.5rem;
-            background: #f3f4f6;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .grade-percentage {
-            font-size: 1.125rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .points-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .points-card {
-            padding: 0.75rem;
-            border-radius: 8px;
-            font-size: 0.75rem;
-        }
-
-        .points-blue {
-            background: #eff6ff;
-            color: #1e40af;
-        }
-
-        .points-green {
-            background: #ecfdf5;
-            color: #065f46;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .stats-card {
-            padding: 0.75rem;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 0.75rem;
-        }
-
-        .stats-purple {
-            background: #faf5ff;
-            color: #7c2d12;
-        }
-
-        .stats-orange {
-            background: #fffbeb;
-            color: #92400e;
-        }
-
-        .collapsible {
-            border: none;
-            background: none;
-            width: 100%;
-            padding: 0.5rem;
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-
-        .collapsible:hover {
-            background: #f9fafb;
-        }
-
-        .grades-list {
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        .grades-list.open {
-            display: block;
-        }
-
-        .grade-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background: #f9fafb;
-            border-radius: 6px;
-            margin-bottom: 0.25rem;
-            font-size: 0.75rem;
-        }
-
-        .grade-info {
-            flex: 1;
-            margin-right: 0.5rem;
-        }
-
-        .grade-name {
-            display: block;
-            font-weight: 500;
-        }
-
-        .grade-date {
-            color: #6b7280;
-            font-size: 0.6875rem;
-        }
-
-        .grade-score {
-            text-align: right;
-        }
-
-        .category-breakdown {
-            margin-bottom: 1rem;
-        }
-
-        .category-header {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-
-        .category-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .category-name {
-            color: #6b7280;
-        }
-
-        .category-score {
-            text-align: right;
-        }
-
-        .upcoming-section {
-            margin-bottom: 1rem;
-        }
-
-        .upcoming-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background: #fefce8;
-            border: 1px solid #fde047;
-            border-radius: 6px;
-            font-size: 0.75rem;
-        }
-
-        .upcoming-left {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .upcoming-right {
-            text-align: right;
-        }
-
-        .alert {
-            padding: 0.5rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .alert-red {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #7f1d1d;
-        }
-
-        .alert-yellow {
-            background: #fffbeb;
-            border: 1px solid #fed7aa;
-            color: #78350f;
-        }
-
-        .chart-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .chart-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-
-        .chart-description {
-            color: #6b7280;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-        }
-
-        .chart-container {
-            height: 300px;
-            background: #f9fafb;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6b7280;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .widgets-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .courses-grid {
-                grid-template-columns: 1fr;
-            }
+            background: linear-gradient(90deg, #3B82F6 var(--progress, 0%), #E5E7EB var(--progress, 0%));
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-left">
-                <div class="avatar">JD</div>
-                <div class="header-text">
-                    <h1>Welcome back, João 👋</h1>
-                    <p>All your course data in one place</p>
-                </div>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-3 md:p-6">
+<div class="max-w-7xl mx-auto space-y-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <div class="h-10 w-10 md:h-12 md:w-12 ring-2 ring-blue-100 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                JD
             </div>
-            <div class="bell-button">
-                🔔
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-900">Welcome back, Joaoooo 👋</h1>
+                <p class="text-sm md:text-base text-gray-600">All your course data in one place</p>
             </div>
         </div>
+        <div class="flex items-center space-x-2">
+            <button class="relative bg-transparent h-8 w-8 md:h-10 md:w-10 border border-gray-300 rounded-md flex items-center justify-center hover:bg-gray-50">
+                <i data-lucide="bell" class="h-3 w-3 md:h-4 md:w-4"></i>
+                <span class="absolute -top-1 -right-1 h-2 w-2 md:h-3 md:w-3 bg-red-500 rounded-full"></span>
+            </button>
+        </div>
+    </div>
 
-        <!-- Summary Cards -->
-        <div class="summary-grid">
-            <div class="summary-card">
-                <div class="summary-card-content">
-                    <div class="icon icon-blue">🎯</div>
-                    <div class="summary-text">
-                        <p>Overall</p>
-                        <h3 class="text-blue">87.1%</h3>
-                        <p>Semester</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-card">
-                <div class="summary-card-content">
-                    <div class="icon icon-green">📊</div>
-                    <div class="summary-text">
-                        <p>Graded</p>
-                        <h3 class="text-green">89.4%</h3>
-                        <p>1847/2065</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-card">
-                <div class="summary-card-content">
-                    <div class="icon icon-purple">✅</div>
-                    <div class="summary-text">
-                        <p>Completed</p>
-                        <h3 class="text-purple">50</h3>
-                        <p>assignments</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-card">
-                <div class="summary-card-content">
-                    <div class="icon icon-orange">⚠️</div>
-                    <div class="summary-text">
-                        <p>Due Soon</p>
-                        <h3 class="text-orange">5</h3>
-                        <p>this week</p>
-                    </div>
+    <!-- Enhanced Summary Widgets -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg p-3 md:p-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="target" class="h-4 w-4 md:h-5 md:w-5 text-blue-600"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600">Overall</p>
+                    <p class="text-lg md:text-2xl font-bold text-blue-600">86.8%</p>
+                    <p class="text-xs text-gray-500">Semester</p>
                 </div>
             </div>
         </div>
 
-        <!-- Widget Cards -->
-        <div class="widgets-grid">
-            <div class="widget-card">
-                <div class="widget-header">
-                    <span class="icon icon-green">📅</span>
-                    <span>This Week</span>
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="font-size: 0.875rem; color: #6b7280;">Tasks Completed</span>
-                        <span style="font-weight: 600;">4/5</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 80%;"></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.875rem; color: #6b7280;">Points Earned</span>
-                        <span style="font-weight: 600; color: #10b981;">91 pts</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="widget-card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);">
-                <div class="widget-header" style="justify-content: center;">
-                    <span class="icon icon-green">🎓</span>
-                    <span>Predicted Grade</span>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #10b981; margin-bottom: 0.5rem;">87%</div>
-                    <div class="badge badge-green">On Track for B+</div>
-                </div>
-            </div>
-
-            <div class="widget-card">
-                <div class="widget-header">
-                    <span>Points Summary</span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 0.875rem; color: #6b7280;">Total Semester</span>
-                        <span style="font-weight: 600;">1847/2120</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 0.875rem; color: #6b7280;">Graded Only</span>
-                        <span style="font-weight: 600; color: #10b981;">1847/2065</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 0.875rem; color: #6b7280;">Remaining</span>
-                        <span style="font-weight: 600; color: #3b82f6;">273</span>
-                    </div>
+        <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg p-3 md:p-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="bar-chart-3" class="h-4 w-4 md:h-5 md:w-5 text-green-600"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600">Graded</p>
+                    <p class="text-lg md:text-2xl font-bold text-green-600">91.8%</p>
+                    <p class="text-xs text-gray-500">1847/2007</p>
                 </div>
             </div>
         </div>
 
-        <!-- Course Cards -->
-        <div class="courses-grid">
-            <!-- Environmental Science -->
-            <div class="course-card">
-                <div class="course-header">
-                    <div class="course-info">
-                        <div class="course-dot dot-green"></div>
-                        <div>
-                            <div class="course-name">Environmental Science</div>
-                            <div class="course-code">ENVS 201</div>
-                        </div>
-                    </div>
-                    <div class="course-grade">
-                        <div class="grade-badge">B+</div>
-                        <div class="grade-percentage text-blue">
-                            87.7%
-                            <span style="color: #10b981;">↗</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="points-grid">
-                    <div class="points-card points-blue">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Semester Points</div>
-                        <div style="font-weight: bold; font-size: 0.875rem;">456/520</div>
-                        <div>87.7%</div>
-                    </div>
-                    <div class="points-card points-green">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Graded Points</div>
-                        <div style="font-weight: bold; font-size: 0.875rem;">456/460</div>
-                        <div>99.1%</div>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stats-card stats-purple">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Class Avg</div>
-                        <div style="font-weight: bold;">82.3%</div>
-                    </div>
-                    <div class="stats-card stats-orange">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Assignments</div>
-                        <div style="font-weight: bold;">11/12</div>
-                    </div>
-                </div>
-
-                <button class="collapsible" onclick="toggleGrades('envs201')">
-                    <span style="font-size: 0.75rem; font-weight: 600; color: #374151;">Recent Grades (5)</span>
-                    <span id="envs201-chevron">▼</span>
-                </button>
-                <div id="envs201-grades" class="grades-list">
-                    <div class="grade-item">
-                        <div class="grade-info">
-                            <span class="grade-name">Lab Report #3</span>
-                            <span class="grade-date">Jan 15</span>
-                        </div>
-                        <div class="grade-score">
-                            <span style="font-weight: 600; color: #10b981;">92%</span>
-                            <div style="color: #6b7280;">46/50</div>
-                        </div>
-                    </div>
-                    <div class="grade-item">
-                        <div class="grade-info">
-                            <span class="grade-name">Quiz #4</span>
-                            <span class="grade-date">Jan 12</span>
-                        </div>
-                        <div class="grade-score">
-                            <span style="font-weight: 600; color: #3b82f6;">88%</span>
-                            <div style="color: #6b7280;">22/25</div>
-                        </div>
-                    </div>
-                    <div class="grade-item">
-                        <div class="grade-info">
-                            <span class="grade-name">Discussion Post</span>
-                            <span class="grade-date">Jan 10</span>
-                        </div>
-                        <div class="grade-score">
-                            <span style="font-weight: 600; color: #10b981;">95%</span>
-                            <div style="color: #6b7280;">19/20</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="category-breakdown">
-                    <div class="category-header">Grade Categories</div>
-                    <div class="category-item">
-                        <span class="category-name">Exams (40%)</span>
-                        <div class="category-score">
-                            <div style="font-weight: 500;">84%</div>
-                            <div style="color: #6b7280;">168/200</div>
-                        </div>
-                    </div>
-                    <div class="category-item">
-                        <span class="category-name">Labs (30%)</span>
-                        <div class="category-score">
-                            <div style="font-weight: 500;">89%</div>
-                            <div style="color: #6b7280;">142/160</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="upcoming-section">
-                    <div class="category-header">Due Soon</div>
-                    <div class="upcoming-item">
-                        <div class="upcoming-left">
-                            <span>🏆</span>
-                            <span>Midterm Exam</span>
-                        </div>
-                        <div class="upcoming-right">
-                            <div style="font-weight: 500; color: #92400e;">Jan 22</div>
-                            <div style="color: #d97706;">100 pts</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mathematics 201 -->
-            <div class="course-card">
-                <div class="course-header">
-                    <div class="course-info">
-                        <div class="course-dot dot-blue"></div>
-                        <div>
-                            <div class="course-name">Mathematics 201</div>
-                            <div class="course-code">MATH 201</div>
-                        </div>
-                    </div>
-                    <div class="course-grade">
-                        <div class="grade-badge">A-</div>
-                        <div class="grade-percentage text-green">
-                            90.0%
-                            <span style="color: #10b981;">↗</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="points-grid">
-                    <div class="points-card points-blue">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Semester Points</div>
-                        <div style="font-weight: bold; font-size: 0.875rem;">378/420</div>
-                        <div>90.0%</div>
-                    </div>
-                    <div class="points-card points-green">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Graded Points</div>
-                        <div style="font-weight: bold; font-size: 0.875rem;">378/380</div>
-                        <div>99.5%</div>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stats-card stats-purple">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Class Avg</div>
-                        <div style="font-weight: bold;">78.5%</div>
-                    </div>
-                    <div class="stats-card stats-orange">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Assignments</div>
-                        <div style="font-weight: bold;">9/10</div>
-                    </div>
-                </div>
-
-                <button class="collapsible" onclick="toggleGrades('math201')">
-                    <span style="font-size: 0.75rem; font-weight: 600; color: #374151;">Recent Grades (5)</span>
-                    <span id="math201-chevron">▼</span>
-                </button>
-                <div id="math201-grades" class="grades-list">
-                    <div class="grade-item">
-                        <div class="grade-info">
-                            <span class="grade-name">Problem Set #8</span>
-                            <span class="grade-date">Jan 14</span>
-                        </div>
-                        <div class="grade-score">
-                            <span style="font-weight: 600; color: #10b981;">95%</span>
-                            <div style="color: #6b7280;">38/40</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="category-breakdown">
-                    <div class="category-header">Grade Categories</div>
-                    <div class="category-item">
-                        <span class="category-name">Exams (50%)</span>
-                        <div class="category-score">
-                            <div style="font-weight: 500;">90%</div>
-                            <div style="color: #6b7280;">180/200</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="upcoming-section">
-                    <div class="category-header">Due Soon</div>
-                    <div class="upcoming-item">
-                        <div class="upcoming-left">
-                            <span>📚</span>
-                            <span>Problem Set #9</span>
-                        </div>
-                        <div class="upcoming-right">
-                            <div style="font-weight: 500; color: #92400e;">Jan 20</div>
-                            <div style="color: #d97706;">40 pts</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chemistry 101 -->
-            <div class="course-card">
-                <div class="course-header">
-                    <div class="course-info">
-                        <div class="course-dot dot-orange"></div>
-                        <div>
-                            <div class="course-name">Chemistry 101</div>
-                            <div class="course-code">CHEM 101</div>
-                        </div>
-                    </div>
-                    <div class="course-grade">
-                        <div class="grade-badge">C+</div>
-                        <div class="grade-percentage text-orange">
-                            78.4%
-                            <span style="color: #ef4444;">↘</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="points-grid">
-                    <div class="points-card points-blue">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Semester Points</div>
-                        <div style="font-weight: bold; font-size: 0.875rem;">298/380</div>
-                        <div>78.4%</div>
-                    </div>
-                    <div class="points-card points-green">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Graded Points</div>
-                        <div style="font-weight: bold; font-size: 0.875rem;">298/320</div>
-                        <div>93.1%</div>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stats-card stats-purple">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Class Avg</div>
-                        <div style="font-weight: bold;">81.7%</div>
-                    </div>
-                    <div class="stats-card stats-orange">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Assignments</div>
-                        <div style="font-weight: bold;">12/14</div>
-                    </div>
-                </div>
-
-                <div class="alert alert-red">
-                    <span>❌</span>
-                    <span>1 missed assignment</span>
-                </div>
-
-                <div style="margin-top: 0.5rem;" class="alert alert-yellow">
-                    <span>⚠️</span>
-                    <span>Below class average by 3.3%</span>
+        <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg p-3 md:p-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="h-4 w-4 md:h-5 md:w-5 text-purple-600"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600">Completed</p>
+                    <p class="text-lg md:text-2xl font-bold text-purple-600">50</p>
+                    <p class="text-xs text-gray-500">assignments</p>
                 </div>
             </div>
         </div>
 
-        <!-- Grade Progression Chart -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <span class="icon icon-purple">📈</span>
-                <span>Overall Grade Progression</span>
-            </div>
-            <div class="chart-description">Your academic performance trend over time</div>
-            <div class="chart-container">
-                <div>Chart visualization would be implemented here with a charting library</div>
+        <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg p-3 md:p-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="alert-triangle" class="h-4 w-4 md:h-5 md:w-5 text-orange-600"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600">Due Soon</p>
+                    <p class="text-lg md:text-2xl font-bold text-orange-600">5</p>
+                    <p class="text-xs text-gray-500">this week</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function toggleGrades(courseId) {
-            const gradesList = document.getElementById(courseId + '-grades');
-            const chevron = document.getElementById(courseId + '-chevron');
-            
-            if (gradesList.classList.contains('open')) {
-                gradesList.classList.remove('open');
-                chevron.textContent = '▼';
-            } else {
-                gradesList.classList.add('open');
-                chevron.textContent = '▲';
-            }
-        }
+    <!-- Additional Widgets Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Weekly Summary -->
+        <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg">
+            <div class="p-4 pb-3">
+                <h3 class="text-lg font-semibold flex items-center space-x-2">
+                    <i data-lucide="calendar" class="h-5 w-5 text-green-600"></i>
+                    <span>This Week</span>
+                </h3>
+            </div>
+            <div class="p-4 pt-0">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Tasks Completed</span>
+                        <span class="font-semibold">4/5</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Points Earned</span>
+                        <span class="font-semibold text-green-600">91 pts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        // Add smooth transitions
-        document.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-    </script>
+        <!-- Predicted Final Grade -->
+        <div class="shadow-sm border-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg">
+            <div class="text-center p-4 pb-3">
+                <h3 class="text-lg font-semibold flex items-center justify-center space-x-2">
+                    <i data-lucide="graduation-cap" class="h-5 w-5 text-green-600"></i>
+                    <span>Predicted Grade</span>
+                </h3>
+            </div>
+            <div class="text-center p-4 pt-0">
+                <div class="text-3xl font-bold text-green-600 mb-2">87%</div>
+                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        On Track for B+
+                    </span>
+            </div>
+        </div>
+
+        <!-- Points Summary -->
+        <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg">
+            <div class="p-4 pb-3">
+                <h3 class="text-lg font-semibold">Points Summary</h3>
+            </div>
+            <div class="p-4 pt-0 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Total Semester</span>
+                    <span class="font-semibold">1847/2127</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Graded Only</span>
+                    <span class="font-semibold text-green-600">1847/2007</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Remaining</span>
+                    <span class="font-semibold text-blue-600">280</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <!-- Environmental Science -->
+        <div class="shadow-sm border-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 hover:scale-101 transition-all duration-200 rounded-lg">
+            <div class="p-4 pb-3">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <div>
+                            <h3 class="font-semibold text-sm md:text-base text-gray-900 leading-tight">Environmental
+                                Science</h3>
+                            <p class="text-xs text-gray-600">ENVS 201</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-gray-100 text-gray-800 text-sm px-2 py-1 rounded">B+</span>
+                        <div class="flex items-center mt-1">
+                            <span class="text-lg font-bold text-blue-600">87.7%</span>
+                            <i data-lucide="trending-up" class="h-3 w-3 text-green-500 ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pt-0 space-y-4">
+                <!-- Points Summary -->
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <p class="text-blue-600 font-medium">Semester Points</p>
+                        <p class="font-bold text-blue-800">456/520</p>
+                        <p class="text-blue-600">87.7%</p>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded">
+                        <p class="text-green-600 font-medium">Graded Points</p>
+                        <p class="font-bold text-green-800">456/460</p>
+                        <p class="text-green-600">99.1%</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-purple-50 p-2 rounded text-center">
+                        <p class="text-purple-600 font-medium">Class Avg</p>
+                        <p class="font-bold text-purple-800">82.3%</p>
+                    </div>
+                    <div class="bg-orange-50 p-2 rounded text-center">
+                        <p class="text-orange-600 font-medium">Assignments</p>
+                        <p class="font-bold text-orange-800">11/12</p>
+                    </div>
+                </div>
+
+                <!-- Collapsible Recent Grades -->
+                <div>
+                    <button onclick="toggleGrades('envs')"
+                            class="w-full justify-between p-2 h-auto text-left hover:bg-gray-50 rounded flex items-center">
+                        <span class="text-xs font-semibold text-gray-700">Recent Grades (5)</span>
+                        <i data-lucide="chevron-down" class="h-3 w-3" id="envs-chevron"></i>
+                    </button>
+                    <div id="envs-grades" class="collapsible-content space-y-1 mt-2">
+                        <div class="flex justify-between items-center text-xs bg-gray-50 p-2 rounded">
+                            <div class="flex-1 mr-2">
+                                <span class="truncate block">Lab Report #3</span>
+                                <span class="text-gray-500">Jan 15</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-semibold text-green-600">92%</span>
+                                <p class="text-gray-500">46/50</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs bg-gray-50 p-2 rounded">
+                            <div class="flex-1 mr-2">
+                                <span class="truncate block">Quiz #4</span>
+                                <span class="text-gray-500">Jan 12</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-semibold text-blue-600">88%</span>
+                                <p class="text-gray-500">22/25</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs bg-gray-50 p-2 rounded">
+                            <div class="flex-1 mr-2">
+                                <span class="truncate block">Discussion Post</span>
+                                <span class="text-gray-500">Jan 10</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-semibold text-green-600">95%</span>
+                                <p class="text-gray-500">19/20</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Grade Categories</h4>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Exams (40%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">84%</span>
+                                <p class="text-gray-500">168/200</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Labs (30%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">89%</span>
+                                <p class="text-gray-500">142/160</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Assignments -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Due Soon</h4>
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-xs bg-amber-50 p-2 rounded border border-amber-200">
+                            <div class="flex items-center space-x-1">
+                                <i data-lucide="award" class="h-3 w-3"></i>
+                                <span class="truncate">Midterm Exam</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-amber-800">Jan 22</p>
+                                <p class="text-amber-600">100 pts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mathematics 201 -->
+        <div class="shadow-sm border-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 hover:scale-101 transition-all duration-200 rounded-lg">
+            <div class="p-4 pb-3">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                        <div>
+                            <h3 class="font-semibold text-sm md:text-base text-gray-900 leading-tight">Mathematics
+                                201</h3>
+                            <p class="text-xs text-gray-600">MATH 201</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-gray-100 text-gray-800 text-sm px-2 py-1 rounded">A-</span>
+                        <div class="flex items-center mt-1">
+                            <span class="text-lg font-bold text-green-600">90.0%</span>
+                            <i data-lucide="trending-up" class="h-3 w-3 text-green-500 ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pt-0 space-y-4">
+                <!-- Points Summary -->
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <p class="text-blue-600 font-medium">Semester Points</p>
+                        <p class="font-bold text-blue-800">378/420</p>
+                        <p class="text-blue-600">90.0%</p>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded">
+                        <p class="text-green-600 font-medium">Graded Points</p>
+                        <p class="font-bold text-green-800">378/380</p>
+                        <p class="text-green-600">99.5%</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-purple-50 p-2 rounded text-center">
+                        <p class="text-purple-600 font-medium">Class Avg</p>
+                        <p class="font-bold text-purple-800">78.5%</p>
+                    </div>
+                    <div class="bg-orange-50 p-2 rounded text-center">
+                        <p class="text-orange-600 font-medium">Assignments</p>
+                        <p class="font-bold text-orange-800">9/10</p>
+                    </div>
+                </div>
+
+                <!-- Grade Categories -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Grade Categories</h4>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Exams (50%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">90%</span>
+                                <p class="text-gray-500">180/200</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Homework (30%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">92%</span>
+                                <p class="text-gray-500">138/150</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Assignments -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Due Soon</h4>
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-xs bg-amber-50 p-2 rounded border border-amber-200">
+                            <div class="flex items-center space-x-1">
+                                <i data-lucide="book-open" class="h-3 w-3"></i>
+                                <span class="truncate">Problem Set #9</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-amber-800">Jan 20</p>
+                                <p class="text-amber-600">40 pts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spanish III -->
+        <div class="shadow-sm border-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 hover:scale-101 transition-all duration-200 rounded-lg">
+            <div class="p-4 pb-3">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                        <div>
+                            <h3 class="font-semibold text-sm md:text-base text-gray-900 leading-tight">Spanish III</h3>
+                            <p class="text-xs text-gray-600">SPAN 301</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-gray-100 text-gray-800 text-sm px-2 py-1 rounded">A</span>
+                        <div class="flex items-center mt-1">
+                            <span class="text-lg font-bold text-green-600">95.0%</span>
+                            <i data-lucide="trending-up" class="h-3 w-3 text-green-500 ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pt-0 space-y-4">
+                <!-- Points Summary -->
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <p class="text-blue-600 font-medium">Semester Points</p>
+                        <p class="font-bold text-blue-800">342/360</p>
+                        <p class="text-blue-600">95.0%</p>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded">
+                        <p class="text-green-600 font-medium">Graded Points</p>
+                        <p class="font-bold text-green-800">342/342</p>
+                        <p class="text-green-600">100%</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-purple-50 p-2 rounded text-center">
+                        <p class="text-purple-600 font-medium">Class Avg</p>
+                        <p class="font-bold text-purple-800">88.2%</p>
+                    </div>
+                    <div class="bg-orange-50 p-2 rounded text-center">
+                        <p class="text-orange-600 font-medium">Assignments</p>
+                        <p class="font-bold text-orange-800">8/8</p>
+                    </div>
+                </div>
+
+                <!-- Grade Categories -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Grade Categories</h4>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Oral (25%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">95%</span>
+                                <p class="text-gray-500">95/100</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Written (35%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">95%</span>
+                                <p class="text-gray-500">142/150</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 p-2 rounded">
+                    <div class="flex items-center space-x-1">
+                        <i data-lucide="check-circle" class="h-3 w-3 text-green-500"></i>
+                        <span class="text-xs text-green-800 font-medium">All assignments up to date!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chemistry 101 -->
+        <div class="shadow-sm border-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 hover:scale-101 transition-all duration-200 rounded-lg">
+            <div class="p-4 pb-3">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+                        <div>
+                            <h3 class="font-semibold text-sm md:text-base text-gray-900 leading-tight">Chemistry
+                                101</h3>
+                            <p class="text-xs text-gray-600">CHEM 101</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-gray-100 text-gray-800 text-sm px-2 py-1 rounded">C+</span>
+                        <div class="flex items-center mt-1">
+                            <span class="text-lg font-bold text-yellow-600">78.4%</span>
+                            <i data-lucide="trending-down" class="h-3 w-3 text-red-500 ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pt-0 space-y-4">
+                <!-- Points Summary -->
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <p class="text-blue-600 font-medium">Semester Points</p>
+                        <p class="font-bold text-blue-800">298/380</p>
+                        <p class="text-blue-600">78.4%</p>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded">
+                        <p class="text-green-600 font-medium">Graded Points</p>
+                        <p class="font-bold text-green-800">298/320</p>
+                        <p class="text-green-600">93.1%</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-purple-50 p-2 rounded text-center">
+                        <p class="text-purple-600 font-medium">Class Avg</p>
+                        <p class="font-bold text-purple-800">81.7%</p>
+                    </div>
+                    <div class="bg-orange-50 p-2 rounded text-center">
+                        <p class="text-orange-600 font-medium">Assignments</p>
+                        <p class="font-bold text-orange-800">12/14</p>
+                    </div>
+                </div>
+
+                <!-- Grade Categories -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Grade Categories</h4>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Exams (45%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">73%</span>
+                                <p class="text-gray-500">145/200</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Labs (30%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">82%</span>
+                                <p class="text-gray-500">98/120</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Assignments -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Due Soon</h4>
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-xs bg-amber-50 p-2 rounded border border-amber-200">
+                            <div class="flex items-center space-x-1">
+                                <i data-lucide="file-text" class="h-3 w-3"></i>
+                                <span class="truncate">Lab Report #5</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-amber-800">Jan 19</p>
+                                <p class="text-amber-600">40 pts</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs bg-amber-50 p-2 rounded border border-amber-200">
+                            <div class="flex items-center space-x-1">
+                                <i data-lucide="award" class="h-3 w-3"></i>
+                                <span class="truncate">Midterm Exam</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-amber-800">Jan 25</p>
+                                <p class="text-amber-600">100 pts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="bg-red-50 border border-red-200 p-2 rounded">
+                    <div class="flex items-center space-x-1">
+                        <i data-lucide="x-circle" class="h-3 w-3 text-red-500"></i>
+                        <span class="text-xs text-red-800 font-medium">1 missed assignment</span>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 p-2 rounded">
+                    <div class="flex items-center space-x-1">
+                        <i data-lucide="alert-triangle" class="h-3 w-3 text-yellow-500"></i>
+                        <span class="text-xs text-yellow-800 font-medium">Below class average by 3.3%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Physics 201 -->
+        <div class="shadow-sm border-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 hover:scale-101 transition-all duration-200 rounded-lg">
+            <div class="p-4 pb-3">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div>
+                            <h3 class="font-semibold text-sm md:text-base text-gray-900 leading-tight">Physics 201</h3>
+                            <p class="text-xs text-gray-600">PHYS 201</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-gray-100 text-gray-800 text-sm px-2 py-1 rounded">B+</span>
+                        <div class="flex items-center mt-1">
+                            <span class="text-lg font-bold text-blue-600">88.8%</span>
+                            <i data-lucide="trending-up" class="h-3 w-3 text-green-500 ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pt-0 space-y-4">
+                <!-- Points Summary -->
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <p class="text-blue-600 font-medium">Semester Points</p>
+                        <p class="font-bold text-blue-800">373/420</p>
+                        <p class="text-blue-600">88.8%</p>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded">
+                        <p class="text-green-600 font-medium">Graded Points</p>
+                        <p class="font-bold text-green-800">373/385</p>
+                        <p class="text-green-600">96.9%</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-purple-50 p-2 rounded text-center">
+                        <p class="text-purple-600 font-medium">Class Avg</p>
+                        <p class="font-bold text-purple-800">84.1%</p>
+                    </div>
+                    <div class="bg-orange-50 p-2 rounded text-center">
+                        <p class="text-orange-600 font-medium">Assignments</p>
+                        <p class="font-bold text-orange-800">10/11</p>
+                    </div>
+                </div>
+
+                <!-- Grade Categories -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Grade Categories</h4>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Exams (40%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">83%</span>
+                                <p class="text-gray-500">165/200</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gray-600">Labs (35%)</span>
+                            <div class="text-right">
+                                <span class="font-medium">91%</span>
+                                <p class="text-gray-500">128/140</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Assignments -->
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Due Soon</h4>
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-xs bg-amber-50 p-2 rounded border border-amber-200">
+                            <div class="flex items-center space-x-1">
+                                <i data-lucide="file-text" class="h-3 w-3"></i>
+                                <span class="truncate">Lab Report #3</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-amber-800">Jan 21</p>
+                                <p class="text-amber-600">35 pts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Progression Chart -->
+    <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg">
+        <div class="p-4 pb-3">
+            <h3 class="text-lg font-semibold flex items-center space-x-2">
+                <i data-lucide="trending-up" class="h-5 w-5 text-purple-600"></i>
+                <span>Overall Grade Progression</span>
+            </h3>
+            <p class="text-sm text-gray-600">Your academic performance trend over time</p>
+        </div>
+        <div class="p-4 pt-0">
+            <div class="h-[300px] flex items-end justify-between space-x-2">
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-200 rounded-t" style="height: 170px;"></div>
+                    <span class="text-xs text-gray-600">Week 1</span>
+                    <span class="text-xs font-semibold">85%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-300 rounded-t" style="height: 204px;"></div>
+                    <span class="text-xs text-gray-600">Week 2</span>
+                    <span class="text-xs font-semibold">88%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-200 rounded-t" style="height: 136px;"></div>
+                    <span class="text-xs text-gray-600">Week 3</span>
+                    <span class="text-xs font-semibold">82%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-400 rounded-t" style="height: 238px;"></div>
+                    <span class="text-xs text-gray-600">Week 4</span>
+                    <span class="text-xs font-semibold">90%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-300 rounded-t" style="height: 187px;"></div>
+                    <span class="text-xs text-gray-600">Week 5</span>
+                    <span class="text-xs font-semibold">87%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-400 rounded-t" style="height: 221px;"></div>
+                    <span class="text-xs text-gray-600">Week 6</span>
+                    <span class="text-xs font-semibold">89%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-500 rounded-t" style="height: 255px;"></div>
+                    <span class="text-xs text-gray-600">Week 7</span>
+                    <span class="text-xs font-semibold">91%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-300 rounded-t" style="height: 187px;"></div>
+                    <span class="text-xs text-gray-600">Week 8</span>
+                    <span class="text-xs font-semibold">87%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Initialize Lucide icons
+  lucide.createIcons();
+
+  // Toggle grades function
+  function toggleGrades(courseId) {
+    const gradesDiv = document.getElementById(courseId + '-grades');
+    const chevron = document.getElementById(courseId + '-chevron');
+
+    if (gradesDiv.classList.contains('expanded')) {
+      gradesDiv.classList.remove('expanded');
+      chevron.setAttribute('data-lucide', 'chevron-down');
+    } else {
+      gradesDiv.classList.add('expanded');
+      chevron.setAttribute('data-lucide', 'chevron-up');
+    }
+
+    // Re-initialize icons after changing
+    lucide.createIcons();
+  }
+
+  // Add click handlers for mobile-friendly interaction
+</script>
 </body>
 </html>
