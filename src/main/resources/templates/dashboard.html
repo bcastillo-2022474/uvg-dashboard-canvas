@@ -31,7 +31,7 @@
                 JD
             </div>
             <div>
-                <h1 class="text-xl md:text-2xl font-bold text-gray-900">Welcome back, Joaoooo 👋</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-900">Welcome back, <span th:text="${userName ?: 'Student'}">Student</span> 👋</h1>
                 <p class="text-sm md:text-base text-gray-600">All your course data in one place</p>
             </div>
         </div>
@@ -40,6 +40,9 @@
                 <i data-lucide="bell" class="h-3 w-3 md:h-4 md:w-4"></i>
                 <span class="absolute -top-1 -right-1 h-2 w-2 md:h-3 md:w-3 bg-red-500 rounded-full"></span>
             </button>
+            <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                Logout
+            </a>
         </div>
     </div>
 
