@@ -1,4 +1,4 @@
-package models;
+package com.bestprograteam.canvas_dashboard.model.entities;
 
 import java.util.Date;
 
