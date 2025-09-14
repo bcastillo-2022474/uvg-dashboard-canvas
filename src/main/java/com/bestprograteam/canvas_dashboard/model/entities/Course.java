@@ -1,51 +1,51 @@
 package com.bestprograteam.canvas_dashboard.model.entities;
 
-import java.util.Date;
-import java.util.List;
-
+/**
+ * Represents a Canvas course with its core attributes.
+ */
 public class Course {
-    private String id;
-    private String name;
-    private String code;
-    private String status;
-    private String enrollmentType;
-    private Date startDate;
-    private Date endDate;
-    private float totalPoints;
-    private float currentGrade;
+    private Integer id;           // Canvas course ID
+    private String name;          // Full course name
+    private String courseCode;    // Extracted code (e.g., "CC2008")
+    private String workflowState; // Course availability status
 
-    public Course(String id, String name, String code, String status, String enrollmentType, Date startDate, Date endDate, float totalPoints, float currentGrade) {
+    // Constructors
+    public Course() {}
+
+    public Course(Integer id, String name, String courseCode, String workflowState) {
         this.id = id;
         this.name = name;
-        this.code = code;
-        this.status = status;
-        this.enrollmentType = enrollmentType;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.totalPoints = totalPoints;
-        this.currentGrade = currentGrade;
+        this.courseCode = courseCode;
+        this.workflowState = workflowState;
     }
 
-    public boolean isActive() {
-        Date today = new Date();
-        return (today.after(startDate) && today.before(endDate));
+    // Getters & Setters
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public List<GradingPeriod> getGradingPeriods() {
-       
-        return null;
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public float calculateProgress() {
-        return totalPoints > 0 ? (currentGrade / totalPoints) * 100 : 0;
+    public String getCourseCode() {
+        return courseCode;
+    }
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
     }
 
-    public Assignment getNextAssignment() {
-        return null;
+    public String getWorkflowState() {
+        return workflowState;
     }
-
-    public float getTotalPointsEarned() {
-        return currentGrade;
+    public void setWorkflowState(String workflowState) {
+        this.workflowState = workflowState;
     }
 }
 
