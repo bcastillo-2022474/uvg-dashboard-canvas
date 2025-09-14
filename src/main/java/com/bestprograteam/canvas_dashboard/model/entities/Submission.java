@@ -4,23 +4,24 @@ import java.time.LocalDateTime;
 
 /**
  * Representa una entrega (submission) de un estudiante en el Canvas Dashboard.
- * Guarda datos básicos y además información de seguimiento como fecha de calificación
- * y si la entrega fue tardía.
+ * Se utiliza para registrar la nota obtenida, el estado de la entrega,
+ * la fecha de calificación y si fue entregada tarde.
  */
 public class Submission {
 
+    // --- Campos principales ---
     private Integer assignmentId;   // Referencia a la asignación
     private Double score;           // Puntos obtenidos (null si no se entregó)
     private String workflowState;   // Estado de la entrega (ej. "submitted", "unsubmitted")
 
-    // --- Nuevos campos en este commit ---
+    // --- Campos de seguimiento ---
     private LocalDateTime gradedAt; // Fecha/hora en que fue calificada
     private Boolean late;           // Indica si la entrega fue tardía
 
     // --- Constructores ---
     public Submission() {}
 
-    public Submission(Integer assignmentId, Double score, String workflowState, LocalDateTime gradedAt, Boolean late) {
+    public Submission(Integer assignmentId, Double score, String workflowState,LocalDateTime gradedAt, Boolean late) {
         this.assignmentId = assignmentId;
         this.score = score;
         this.workflowState = workflowState;
@@ -67,6 +68,23 @@ public class Submission {
 
     public void setLate(Boolean late) {
         this.late = late;
+    }
+
+    // --- Métodos auxiliares ---
+    /**
+     * Indica si la entrega ya fue calificada.
+     * @return true si gradedAt no es null, false en caso contrario
+     */
+    public boolean isGraded() {
+        return gradedAt != null;
+    }
+
+    /**
+     * Indica si la entrega fue entregada tarde.
+     * @return true si late es true, false en caso contrario
+     */
+    public boolean isLate() {
+        return Boolean.TRUE.equals(late);
     }
 
     // --- toString ---
