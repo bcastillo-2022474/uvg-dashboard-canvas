@@ -1,36 +1,41 @@
 package com.bestprograteam.canvas_dashboard.model.entities;
 
-import java.util.Date;
-
+/**
+ * Represents a student submission for an assignment in the Canvas Dashboard.
+ * Tracks scores and submission workflow state.
+ */
 public class Submission {
-    private String id;
-    private String assignmentId;
-    private String userId;
-    private Date submittedAt;
 
-    public Submission(String id, String assignmentId, String userId, Date submittedAt) {
-        this.id = id;
+    private Integer assignmentId;  // Reference to Assignment
+    private Double score;          // Points earned (null if unsubmitted)
+    private String workflowState;  // Submission status filter
+
+    // Constructors
+    public Submission() {}
+
+    public Submission(Integer assignmentId, Double score, String workflowState) {
         this.assignmentId = assignmentId;
-        this.userId = userId;
-        this.submittedAt = submittedAt;
+        this.score = score;
+        this.workflowState = workflowState;
     }
 
-    public boolean isLate() {
-        // lógica
-        return false;
-    }
+    // Getters and Setters
+    public Integer getAssignmentId() { return assignmentId; }
+    public void setAssignmentId(Integer assignmentId) { this.assignmentId = assignmentId; }
 
-    public boolean isMissing() {
-        // lógica
-        return false;
-    }
+    public Double getScore() { return score; }
+    public void setScore(Double score) { this.score = score; }
 
-    public boolean isGraded() {
-        // lógica
-        return false;
-    }
+    public String getWorkflowState() { return workflowState; }
+    public void setWorkflowState(String workflowState) { this.workflowState = workflowState; }
 
-    public float getScore() {
-        return 0;
+    @Override
+    public String toString() {
+        return "Submission{" +
+                "assignmentId=" + assignmentId +
+                ", score=" + score +
+                ", workflowState='" + workflowState + '\'' +
+                '}';
     }
 }
+
