@@ -1,49 +1,26 @@
 package com.bestprograteam.canvas_dashboard.model.entities;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * Assignment entity - basic version
+ * Fields: id, courseId, name, dueAt
+ */
 public class Assignment {
-    private String id;
+    private Integer id;
+    private Integer courseId;
     private String name;
-    private String description;
-    private Date dueDate;
-    private float pointsPossible;
-    private String[] submissionTypes;
-    private int courseId;
-    private String gradingCategoryId;
-    private int position;
+    private LocalDateTime dueAt;
 
-    public Assignment(String id, String name, String description, Date dueDate, float pointsPossible, String[] submissionTypes, int courseId, String gradingCategoryId, int position) {
+    public Assignment() { }
+
+    public Assignment(Integer id, Integer courseId, String name, LocalDateTime dueAt) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.pointsPossible = pointsPossible;
-        this.submissionTypes = submissionTypes;
         this.courseId = courseId;
-        this.gradingCategoryId = gradingCategoryId;
-        this.position = position;
+        this.name = name;
+        this.dueAt = dueAt;
     }
 
-    public boolean isOverdue() {
-        return new Date().after(dueDate);
-    }
-
-    public int getDaysUntilDue() {
-        long diff = dueDate.getTime() - new Date().getTime();
-        return (int) (diff / (1000 * 60 * 60 * 24));
-    }
-
-    public boolean isCompleted(String userId) {
-        
-        return false;//completado
-    }
-
-    public String getStatus() {
-        return isOverdue() ? "Overdue" : "Pending";
-    }
-
-    public Submission getSubmission(String userId) {
-        return null;
-    }
+    // Lo demás (description, submissionTypes, etc.) se agregará en commits posteriores
 }
+
