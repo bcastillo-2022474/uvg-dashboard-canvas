@@ -42,6 +42,7 @@ public class DashboardController {
 
     @GetMapping("/login")
     public String login() {
+        System.out.println("AJLKJDHAJDHDJAK");
         return "login";
     }
 }

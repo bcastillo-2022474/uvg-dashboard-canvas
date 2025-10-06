@@ -1,83 +1,51 @@
 package com.bestprograteam.canvas_dashboard.model.entities;
 
-/**
- * Represents a Canvas course for the dashboard display.
- * Includes course metadata, visual settings, and assignment counts.
- */
+import java.util.Date;
+import java.util.List;
+
 public class Course {
-    private Integer id;                    // Canvas course ID
-    private String name;                   // Full course name
-    private String courseCode;             // Extracted code (e.g., "CC2008")
-    private String displayName;            // Shortened UI name
-    private String colorCode;              // Hex color for visual distinction
-    private String workflowState;          // Course availability status
-    private Integer completedAssignments;  // Count of graded submissions
-    private Integer totalAssignments;      // Count of all assignments
-    private Integer upcomingAssignments;   // Count due within 7 days
+    private String id;
+    private String name;
+    private String code;
+    private String status;
+    private String enrollmentType;
+    private Date startDate;
+    private Date endDate;
+    private float totalPoints;
+    private float currentGrade;
 
-    /**
-     * Default constructor.
-     */
-    public Course() {}
-
-    /**
-     * Full constructor for Course entity.
-     */
-    public Course(Integer id, String name, String courseCode, String displayName,
-                  String colorCode, String workflowState,
-                  Integer completedAssignments, Integer totalAssignments, Integer upcomingAssignments) {
+    public Course(String id, String name, String code, String status, String enrollmentType, Date startDate, Date endDate, float totalPoints, float currentGrade) {
         this.id = id;
         this.name = name;
-        this.courseCode = courseCode;
-        this.displayName = displayName;
-        this.colorCode = colorCode;
-        this.workflowState = workflowState;
-        this.completedAssignments = completedAssignments;
-        this.totalAssignments = totalAssignments;
-        this.upcomingAssignments = upcomingAssignments;
+        this.code = code;
+        this.status = status;
+        this.enrollmentType = enrollmentType;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.totalPoints = totalPoints;
+        this.currentGrade = currentGrade;
     }
 
-    // Getters & Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public boolean isActive() {
+        Date today = new Date();
+        return (today.after(startDate) && today.before(endDate));
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+//    public List<GradingPeriod> getGradingPeriods() {
+//
+//        return null;
+//    }
 
-    public String getCourseCode() { return courseCode; }
-    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
+    public float calculateProgress() {
+        return totalPoints > 0 ? (currentGrade / totalPoints) * 100 : 0;
+    }
 
-    public String getDisplayName() { return displayName; }
-    public void setDisplayName(String displayName) { this.displayName = displayName; }
+    public Assignment getNextAssignment() {
+        return null;
+    }
 
-    public String getColorCode() { return colorCode; }
-    public void setColorCode(String colorCode) { this.colorCode = colorCode; }
-
-    public String getWorkflowState() { return workflowState; }
-    public void setWorkflowState(String workflowState) { this.workflowState = workflowState; }
-
-    public Integer getCompletedAssignments() { return completedAssignments; }
-    public void setCompletedAssignments(Integer completedAssignments) { this.completedAssignments = completedAssignments; }
-
-    public Integer getTotalAssignments() { return totalAssignments; }
-    public void setTotalAssignments(Integer totalAssignments) { this.totalAssignments = totalAssignments; }
-
-    public Integer getUpcomingAssignments() { return upcomingAssignments; }
-    public void setUpcomingAssignments(Integer upcomingAssignments) { this.upcomingAssignments = upcomingAssignments; }
-
-    @Override
-    public String toString() {
-        return "Course{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", courseCode='" + courseCode + '\'' +
-                ", displayName='" + displayName + '\'' +
-                ", colorCode='" + colorCode + '\'' +
-                ", workflowState='" + workflowState + '\'' +
-                ", completedAssignments=" + completedAssignments +
-                ", totalAssignments=" + totalAssignments +
-                ", upcomingAssignments=" + upcomingAssignments +
-                '}';
+    public float getTotalPointsEarned() {
+        return currentGrade;
     }
 }
 
