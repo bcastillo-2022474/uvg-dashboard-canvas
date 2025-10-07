@@ -1,0 +1,81 @@
+package com.bestprograteam.canvas_dashboard.model.entities;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Representa una categoría de calificación en Canvas.
+ */
+public class GradingCategory {
+
+    private String id;
+    private String name;
+    private float weight;
+    private String courseId;
+    private int position;
+    private float dropLowest;
+    private float dropHighest;
+
+    public GradingCategory() { }
+
+    public GradingCategory(String id, String name, float weight, String courseId, int position, float dropLowest, float dropHighest) {
+        this.id = id;
+        this.name = name;
+        this.weight = weight;
+        this.courseId = courseId;
+        this.position = position;
+        this.dropLowest = dropLowest;
+        this.dropHighest = dropHighest;
+    }
+
+    // --- Getters y Setters ---
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public float getWeight() { return weight; }
+    public void setWeight(float weight) { this.weight = weight; }
+
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
+
+    public int getPosition() { return position; }
+    public void setPosition(int position) { this.position = position; }
+
+    public float getDropLowest() { return dropLowest; }
+    public void setDropLowest(float dropLowest) { this.dropLowest = dropLowest; }
+
+    public float getDropHighest() { return dropHighest; }
+    public void setDropHighest(float dropHighest) { this.dropHighest = dropHighest; }
+
+    // --- Métodos de cálculo ---
+    public float calculateWeightedScore(List<Submission> submissions) {
+        if (submissions == null || submissions.isEmpty()) return 0f;
+
+        float totalScore = 0f;
+        int count = submissions.size();
+        for (Submission s : submissions) {
+            if (s.getScore() != null) {
+                totalScore += s.getScore();
+            }
+        }
+        // Aplicar peso de la categoría
+        return (totalScore / count) * (weight / 100f);
+    }
+
+    public float getAverageScore(List<Submission> submissions) {
+        if (submissions == null || submissions.isEmpty()) return 0f;
+
+        float total = 0f;
+        int count = 0;
+        for (Submission s : submissions) {
+            if (s.getScore() != null) {
+                total += s.getScore();
+                count++;
+            }
+        }
+        return count > 0 ? total / count : 0f;
+    }
+}
