@@ -1,0 +1,64 @@
+package com.bestprograteam.canvas_dashboard.model.entities;
+
+import java.util.Date;
+import java.util.Map;
+
+/**
+ * Representa retroalimentación de un profesor sobre una entrega.
+ */
+public class Feedback {
+
+    private String id;
+    private String submissionId;
+    private String teacherComments;
+    private Map<String, Object> rubricAssessment;
+    private Date timeStamp;
+    private float score;
+
+    public Feedback() { }
+
+    public Feedback(String id, String submissionId, String teacherComments, Map<String, Object> rubricAssessment, Date timeStamp, float score) {
+        this.id = id;
+        this.submissionId = submissionId;
+        this.teacherComments = teacherComments;
+        this.rubricAssessment = rubricAssessment;
+        this.timeStamp = timeStamp;
+        this.score = score;
+    }
+
+    // --- Getters y Setters ---
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getSubmissionId() { return submissionId; }
+    public void setSubmissionId(String submissionId) { this.submissionId = submissionId; }
+
+    public String getTeacherComments() { return teacherComments; }
+    public void setTeacherComments(String teacherComments) { this.teacherComments = teacherComments; }
+
+    public Map<String, Object> getRubricAssessment() { return rubricAssessment; }
+    public void setRubricAssessment(Map<String, Object> rubricAssessment) { this.rubricAssessment = rubricAssessment; }
+
+    public Date getTimeStamp() { return timeStamp; }
+    public void setTimeStamp(Date timeStamp) { this.timeStamp = timeStamp; }
+
+    public float getScore() { return score; }
+    public void setScore(float score) { this.score = score; }
+
+    // --- Métodos auxiliares ---
+    public boolean hasComments() {
+        return teacherComments != null && !teacherComments.isEmpty();
+    }
+
+    public String getFormattedComments() {
+        return hasComments() ? teacherComments.trim() : "No comments";
+    }
+
+    public Map<String, Object> getRubricDetails() {
+        return rubricAssessment;
+    }
+
+    public String getFormattedDate() {
+        return timeStamp != null ? timeStamp.toString() : "N/A";
+    }
+}
