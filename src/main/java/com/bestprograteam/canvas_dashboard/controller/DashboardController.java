@@ -1,7 +1,7 @@
 package com.bestprograteam.canvas_dashboard.controller;
 
-import com.bestprograteam.canvas_dashboard.model.repositories.CanvasCoursesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bestprograteam.canvas_dashboard.model.dto.DashboardData;
+import com.bestprograteam.canvas_dashboard.service.DashboardService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -13,8 +13,11 @@ import java.util.Map;
 @Controller
 public class DashboardController {
 
-    @Autowired
-    private CanvasCoursesRepository coursesRepository;
+    private final DashboardService dashboardService;
+
+    public DashboardController(DashboardService dashboardService) {
+        this.dashboardService = dashboardService;
+    }
 
     @GetMapping("/")
     public String home() {
@@ -26,15 +29,15 @@ public class DashboardController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object details = authentication.getDetails();
-            
+
             if (details instanceof Map) {
                 Map<String, Object> userDetails = (Map<String, Object>) details;
                 model.addAttribute("user", userDetails);
                 model.addAttribute("userName", userDetails.get("name"));
                 model.addAttribute("userId", userDetails.get("id"));
-                
-                // Use injected repository - it will automatically have the API token from @PostConstruct
-                coursesRepository.findCurrentCourses();
+
+                DashboardData dashboardData = dashboardService.getDashboardData();
+                model.addAttribute("dashboardData", dashboardData);
             }
         }
         return "dashboard";
@@ -42,7 +45,6 @@ public class DashboardController {
 
     @GetMapping("/login")
     public String login() {
-        System.out.println("AJLKJDHAJDHDJAK");
         return "login";
     }
 }
