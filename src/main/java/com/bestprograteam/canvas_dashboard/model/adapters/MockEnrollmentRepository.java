@@ -77,7 +77,7 @@ public class MockEnrollmentRepository implements EnrollmentRepository {
     @Override
     public Enrollment findEnrollmentByCourseId(Integer courseId) {
         return mockEnrollments.stream()
-                .filter(e -> e.getCourseId().equals(courseId))
+                .filter(e -> e.courseId.equals(courseId))
                 .findFirst()
                 .orElse(null);
     }

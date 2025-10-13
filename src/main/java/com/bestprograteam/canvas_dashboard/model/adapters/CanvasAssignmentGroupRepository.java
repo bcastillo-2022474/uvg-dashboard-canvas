@@ -88,7 +88,7 @@ public class CanvasAssignmentGroupRepository implements AssignmentGroupRepositor
     public AssignmentGroup findAssignmentGroupById(Integer courseId, Integer groupId) {
         List<AssignmentGroup> groups = findAssignmentGroupsByCourseId(courseId);
         return groups.stream()
-                .filter(g -> g.getId().equals(groupId))
+                .filter(g -> g.id.equals(groupId))
                 .findFirst()
                 .orElse(null);
     }

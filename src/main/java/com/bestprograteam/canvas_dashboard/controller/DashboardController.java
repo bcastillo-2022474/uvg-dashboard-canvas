@@ -36,9 +36,12 @@ public class DashboardController {
 
             if (details instanceof Map) {
                 Map<String, Object> userDetails = (Map<String, Object>) details;
+                String userName = (String) userDetails.get("name");
+
                 model.addAttribute("user", userDetails);
-                model.addAttribute("userName", userDetails.get("name"));
+                model.addAttribute("userName", userName);
                 model.addAttribute("userId", userDetails.get("id"));
+                model.addAttribute("userInitials", extractInitials(userName));
 
                 DashboardData dashboardData = dashboardService.getDashboardData();
                 model.addAttribute("dashboardData", dashboardData);
@@ -53,5 +56,35 @@ public class DashboardController {
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+
+    /**
+     * Extract initials from a full name.
+     * Examples: "John Doe" -> "JD", "Alice" -> "A", "Bob Smith Jr" -> "BS"
+     */
+    private String extractInitials(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "?";
+        }
+
+        String[] parts = fullName.trim().split("\\s+");
+
+        if (parts.length == 0) {
+            return "?";
+        }
+
+        StringBuilder initials = new StringBuilder();
+
+        // First initial
+        if (parts[0].length() > 0) {
+            initials.append(parts[0].charAt(0));
+        }
+
+        // Second initial (if exists)
+        if (parts.length > 1 && parts[1].length() > 0) {
+            initials.append(parts[1].charAt(0));
+        }
+
+        return initials.toString().toUpperCase();
     }
 }

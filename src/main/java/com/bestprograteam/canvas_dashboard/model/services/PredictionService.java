@@ -24,24 +24,24 @@ public class PredictionService {
         List<Assignment> allAssignments = new ArrayList<>();
         List<RecentGrade> gradedRecentGrades = new ArrayList<>();
 
-        dashboardData.getCourseCards().forEach(courseCard -> {
-            gradedRecentGrades.addAll(courseCard.getRecentGrades());
+        dashboardData.courseCards.forEach(courseCard -> {
+            gradedRecentGrades.addAll(courseCard.recentGrades);
 
             // Add all assignments to a single list, avoiding duplicates
-            courseCard.getRecentGrades().forEach(rg -> {
-                if (allAssignments.stream().noneMatch(a -> a.getId().equals(rg.getAssignment().getId()))) {
-                    allAssignments.add(rg.getAssignment());
+            courseCard.recentGrades.forEach(rg -> {
+                if (allAssignments.stream().noneMatch(a -> a.id.equals(rg.assignment.id))) {
+                    allAssignments.add(rg.assignment);
                 }
             });
-            courseCard.getUpcomingAssignments().forEach(ua -> {
-                if (allAssignments.stream().noneMatch(a -> a.getId().equals(ua.getId()))) {
+            courseCard.upcomingAssignments.forEach(ua -> {
+                if (allAssignments.stream().noneMatch(a -> a.id.equals(ua.id))) {
                     allAssignments.add(ua);
                 }
             });
         });
 
         // Sort graded assignments chronologically for processing
-        gradedRecentGrades.sort(Comparator.comparing(rg -> rg.getSubmission().getGradedAt()));
+        gradedRecentGrades.sort(Comparator.comparing(rg -> rg.submission.gradedAt));
 
         if (gradedRecentGrades.size() < 5) {
             return new PredictionData(); // Not enough data
@@ -51,13 +51,13 @@ public class PredictionService {
         List<ChartDataPoint> gradeProgression = generateGradeProgression(gradedRecentGrades);
 
         // --- Linear Regression Calculation ---
-        Instant firstGradedDate = gradedRecentGrades.get(0).getSubmission().getGradedAt().atZone(ZoneOffset.UTC).toInstant();
+        Instant firstGradedDate = gradedRecentGrades.get(0).submission.gradedAt.atZone(ZoneOffset.UTC).toInstant();
         List<DataPoint> dataPoints = new ArrayList<>();
         for (RecentGrade rg : gradedRecentGrades) {
-            Assignment assignment = rg.getAssignment();
-            if (assignment.getPointsPossible() > 0 && rg.getSubmission().getScore() != null) {
-                double x = Duration.between(firstGradedDate, rg.getSubmission().getGradedAt().atZone(ZoneOffset.UTC).toInstant()).toDays();
-                double y = (rg.getSubmission().getScore() / assignment.getPointsPossible()) * 100;
+            Assignment assignment = rg.assignment;
+            if (assignment.pointsPossible > 0 && rg.submission.score != null) {
+                double x = Duration.between(firstGradedDate, rg.submission.gradedAt.atZone(ZoneOffset.UTC).toInstant()).toDays();
+                double y = (rg.submission.score / assignment.pointsPossible) * 100;
                 dataPoints.add(new DataPoint(x, y));
             }
         }
@@ -84,31 +84,31 @@ public class PredictionService {
 
         // --- Predict Future Scores ---
         List<Integer> gradedAssignmentIds = gradedRecentGrades.stream()
-                .map(rg -> rg.getAssignment().getId())
+                .map(rg -> rg.assignment.id)
                 .toList();
 
         List<Assignment> ungradedAssignments = allAssignments.stream()
-                .filter(a -> !gradedAssignmentIds.contains(a.getId()))
+                .filter(a -> !gradedAssignmentIds.contains(a.id))
                 .toList();
 
         double totalPredictedPoints = 0;
         for (Assignment assignment : ungradedAssignments) {
-            if (assignment.getPointsPossible() > 0) {
-                Instant predictionTime = assignment.getDueAt() != null ? assignment.getDueAt().atZone(ZoneOffset.UTC).toInstant() : Instant.now();
+            if (assignment.pointsPossible > 0) {
+                Instant predictionTime = assignment.dueAt != null ? assignment.dueAt.atZone(ZoneOffset.UTC).toInstant() : Instant.now();
                 double x = Duration.between(firstGradedDate, predictionTime).toDays();
                 double predictedScorePercentage = slope * x + intercept;
                 predictedScorePercentage = Math.max(0, Math.min(100, predictedScorePercentage)); // Clamp
-                totalPredictedPoints += (predictedScorePercentage / 100) * assignment.getPointsPossible();
+                totalPredictedPoints += (predictedScorePercentage / 100) * assignment.pointsPossible;
             }
         }
 
         // --- Calculate Final Grade ---
         double totalEarnedPoints = gradedRecentGrades.stream()
-                .mapToDouble(rg -> rg.getSubmission().getScore() != null ? rg.getSubmission().getScore() : 0)
+                .mapToDouble(rg -> rg.submission.score != null ? rg.submission.score : 0)
                 .sum();
 
         double totalPossiblePoints = allAssignments.stream()
-                .mapToDouble(Assignment::getPointsPossible)
+                .mapToDouble(a -> a.pointsPossible)
                 .sum();
 
         if (totalPossiblePoints == 0) {
@@ -132,13 +132,13 @@ public class PredictionService {
         int assignmentCount = 0;
 
         for (RecentGrade rg : gradedRecentGrades) {
-            if (rg.getSubmission().getScore() == null || rg.getAssignment().getPointsPossible() == null) {
+            if (rg.submission.score == null || rg.assignment.pointsPossible == null) {
                 continue;
             }
 
             assignmentCount++;
-            cumulativeScore += rg.getSubmission().getScore();
-            cumulativePossiblePoints += rg.getAssignment().getPointsPossible();
+            cumulativeScore += rg.submission.score;
+            cumulativePossiblePoints += rg.assignment.pointsPossible;
             if (cumulativePossiblePoints > 0) {
                 double currentOverall = (cumulativeScore / cumulativePossiblePoints) * 100;
                 progression.add(new ChartDataPoint("Assign. " + assignmentCount, currentOverall));

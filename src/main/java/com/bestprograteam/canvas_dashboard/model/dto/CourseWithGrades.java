@@ -9,29 +9,13 @@ import com.bestprograteam.canvas_dashboard.model.entities.Enrollment;
  */
 public class CourseWithGrades {
 
-    private Course course;
-    private Enrollment enrollment;
+    public Course course;
+    public Enrollment enrollment;
 
     public CourseWithGrades() {}
 
     public CourseWithGrades(Course course, Enrollment enrollment) {
         this.course = course;
-        this.enrollment = enrollment;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public Enrollment getEnrollment() {
-        return enrollment;
-    }
-
-    public void setEnrollment(Enrollment enrollment) {
         this.enrollment = enrollment;
     }
 

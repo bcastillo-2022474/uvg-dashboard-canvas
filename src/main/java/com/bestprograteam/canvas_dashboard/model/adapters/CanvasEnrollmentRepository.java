@@ -91,7 +91,7 @@ public class CanvasEnrollmentRepository implements EnrollmentRepository {
     public Enrollment findEnrollmentByCourseId(Integer courseId) {
         List<Enrollment> enrollments = findAllEnrollments();
         return enrollments.stream()
-                .filter(e -> e.getCourseId().equals(courseId))
+                .filter(e -> e.courseId.equals(courseId))
                 .findFirst()
                 .orElse(null);
     }

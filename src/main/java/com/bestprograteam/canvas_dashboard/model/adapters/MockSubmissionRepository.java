@@ -59,13 +59,13 @@ public class MockSubmissionRepository implements SubmissionRepository {
     private Submission createSubmission(Integer assignmentId, Double score, String state,
                                        Integer daysOffset, Boolean late) {
         Submission submission = new Submission();
-        submission.setAssignmentId(assignmentId);
-        submission.setScore(score);
-        submission.setWorkflowState(state);
-        submission.setLate(late);
+        submission.assignmentId = assignmentId;
+        submission.score = score;
+        submission.workflowState = state;
+        submission.late = late;
 
         if (daysOffset != null) {
-            submission.setGradedAt(LocalDateTime.now().plusDays(daysOffset));
+            submission.gradedAt = LocalDateTime.now().plusDays(daysOffset);
         }
 
         return submission;
@@ -83,7 +83,7 @@ public class MockSubmissionRepository implements SubmissionRepository {
             return null;
         }
         return submissions.stream()
-                .filter(s -> s.getAssignmentId().equals(assignmentId))
+                .filter(s -> s.assignmentId.equals(assignmentId))
                 .findFirst()
                 .orElse(null);
     }
@@ -96,8 +96,8 @@ public class MockSubmissionRepository implements SubmissionRepository {
         }
 
         return submissions.stream()
-                .filter(s -> s.getGradedAt() != null)
-                .sorted(Comparator.comparing(Submission::getGradedAt).reversed())
+                .filter(s -> s.gradedAt != null)
+                .sorted(Comparator.comparing((Submission s) -> s.gradedAt).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
     }

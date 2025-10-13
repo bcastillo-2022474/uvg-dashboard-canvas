@@ -73,8 +73,8 @@ public class DashboardService {
         // Step 2: For each course, fetch assignments, submissions, and groups in parallel
         List<CompletableFuture<CourseCardData>> cardFutures = courses.stream()
                 .map(course -> CompletableFuture.supplyAsync(() -> {
-                    Integer courseId = Integer.parseInt(course.getId());
-                    System.out.println("[Processing] Course " + courseId + " - " + course.getName());
+                    Integer courseId = Integer.parseInt(course.id);
+                    System.out.println("[Processing] Course " + courseId + " - " + course.name);
 
                     try {
                         // Fetch all data for this course in parallel
@@ -96,7 +96,7 @@ public class DashboardService {
 
                         // Find enrollment for this course
                         Enrollment enrollment = enrollments.stream()
-                                .filter(e -> e.getCourseId().equals(courseId))
+                                .filter(e -> e.courseId.equals(courseId))
                                 .findFirst()
                                 .orElse(null);
 
@@ -124,8 +124,8 @@ public class DashboardService {
 
         // Step 3: Calculate upcoming assignments from all courses
         List<Assignment> allUpcomingAssignments = courseCards.stream()
-                .flatMap(card -> card.getUpcomingAssignments().stream())
-                .sorted(Comparator.comparing(Assignment::getDueAt))
+                .flatMap(card -> card.upcomingAssignments.stream())
+                .sorted(Comparator.comparing((Assignment a) -> a.dueAt))
                 .limit(10)
                 .collect(Collectors.toList());
 
@@ -149,12 +149,12 @@ public class DashboardService {
 
         // Recent grades (last 5)
         List<RecentGrade> recentGrades = submissions.stream()
-                .filter(s -> s.getGradedAt() != null)
-                .sorted(Comparator.comparing(Submission::getGradedAt).reversed())
+                .filter(s -> s.gradedAt != null)
+                .sorted(Comparator.comparing((Submission s) -> s.gradedAt).reversed())
                 .limit(5)
                 .map(submission -> {
                     Assignment assignment = assignments.stream()
-                            .filter(a -> a.getId().equals(submission.getAssignmentId()))
+                            .filter(a -> a.id.equals(submission.assignmentId))
                             .findFirst()
                             .orElse(null);
                     return assignment != null ? new RecentGrade(submission, assignment) : null;
@@ -166,7 +166,7 @@ public class DashboardService {
         List<CategoryBreakdown> categoryBreakdown = groups.stream()
                 .map(group -> {
                     List<Assignment> groupAssignments = assignments.stream()
-                            .filter(a -> a.getAssignmentGroupId() != null && a.getAssignmentGroupId().equals(group.getId()))
+                            .filter(a -> a.assignmentGroupId != null && a.assignmentGroupId.equals(group.id))
                             .collect(Collectors.toList());
 
                     double earnedPoints = 0.0;
@@ -174,15 +174,15 @@ public class DashboardService {
                     int completedCount = 0;
 
                     for (Assignment assignment : groupAssignments) {
-                        if (assignment.getPointsPossible() != null) {
+                        if (assignment.pointsPossible != null) {
                             Submission submission = submissions.stream()
-                                    .filter(s -> s.getAssignmentId().equals(assignment.getId()))
+                                    .filter(s -> s.assignmentId.equals(assignment.id))
                                     .findFirst()
                                     .orElse(null);
 
-                            if (submission != null && submission.getScore() != null) {
-                                earnedPoints += submission.getScore();
-                                totalPoints += assignment.getPointsPossible();
+                            if (submission != null && submission.score != null) {
+                                earnedPoints += submission.score;
+                                totalPoints += assignment.pointsPossible;
                                 completedCount++;
                             }
                         }
@@ -198,9 +198,9 @@ public class DashboardService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime futureLimit = now.plusDays(7);
         List<Assignment> upcomingAssignments = assignments.stream()
-                .filter(a -> a.getDueAt() != null)
-                .filter(a -> a.getDueAt().isAfter(now) && a.getDueAt().isBefore(futureLimit))
-                .sorted(Comparator.comparing(Assignment::getDueAt))
+                .filter(a -> a.dueAt != null)
+                .filter(a -> a.dueAt.isAfter(now) && a.dueAt.isBefore(futureLimit))
+                .sorted(Comparator.comparing((Assignment a) -> a.dueAt))
                 .collect(Collectors.toList());
 
         // Trend calculation (simple version based on recent grades)
@@ -208,17 +208,17 @@ public class DashboardService {
 
         // Calculate remaining points
         double totalPossiblePoints = assignments.stream()
-                .filter(a -> a.getPointsPossible() != null)
-                .mapToDouble(Assignment::getPointsPossible)
+                .filter(a -> a.pointsPossible != null)
+                .mapToDouble(a -> a.pointsPossible)
                 .sum();
 
         double gradedPointsPossible = 0.0;
         for (Assignment assignment : assignments) {
-            if (assignment.getPointsPossible() != null) {
+            if (assignment.pointsPossible != null) {
                 boolean isGraded = submissions.stream()
-                    .anyMatch(s -> s.getAssignmentId().equals(assignment.getId()) && s.getScore() != null);
+                    .anyMatch(s -> s.assignmentId.equals(assignment.id) && s.score != null);
                 if (isGraded) {
-                    gradedPointsPossible += assignment.getPointsPossible();
+                    gradedPointsPossible += assignment.pointsPossible;
                 }
             }
         }
@@ -237,7 +237,7 @@ public class DashboardService {
     private SemesterSummary calculateSemesterSummary(List<CourseCardData> courseCards, List<Enrollment> enrollments) {
         // Overall percentage (average of current scores)
         double overallPercentage = enrollments.stream()
-                .map(Enrollment::getCurrentScore)
+                .map(e -> e.currentScore)
                 .filter(Objects::nonNull)
                 .mapToDouble(Double::doubleValue)
                 .average()
@@ -247,7 +247,7 @@ public class DashboardService {
 
         // Count upcoming assignments
         long upcomingCount = courseCards.stream()
-                .flatMap(card -> card.getUpcomingAssignments().stream())
+                .flatMap(card -> card.upcomingAssignments.stream())
                 .count();
 
         // Overall trend
@@ -255,27 +255,27 @@ public class DashboardService {
 
         // Aggregate points
         int totalCompletedAssignments = courseCards.stream()
-                .mapToInt(card -> card.getRecentGrades().size())
+                .mapToInt(card -> card.recentGrades.size())
                 .sum();
 
         double totalGradedPoints = courseCards.stream()
-                .flatMap(card -> card.getRecentGrades().stream())
-                .map(RecentGrade::getSubmission)
-                .filter(sub -> sub.getScore() != null)
-                .mapToDouble(sub -> sub.getScore())
+                .flatMap(card -> card.recentGrades.stream())
+                .map(rg -> rg.submission)
+                .filter(sub -> sub.score != null)
+                .mapToDouble(sub -> sub.score)
                 .sum();
 
         double totalGradedPointsPossible = courseCards.stream()
-                .flatMap(card -> card.getRecentGrades().stream())
-                .map(RecentGrade::getAssignment)
-                .filter(a -> a.getPointsPossible() != null)
-                .mapToDouble(Assignment::getPointsPossible)
+                .flatMap(card -> card.recentGrades.stream())
+                .map(rg -> rg.assignment)
+                .filter(a -> a.pointsPossible != null)
+                .mapToDouble(a -> a.pointsPossible)
                 .sum();
 
         double totalUpcomingPoints = courseCards.stream()
-                .flatMap(card -> card.getUpcomingAssignments().stream())
-                .filter(a -> a.getPointsPossible() != null)
-                .mapToDouble(Assignment::getPointsPossible)
+                .flatMap(card -> card.upcomingAssignments.stream())
+                .filter(a -> a.pointsPossible != null)
+                .mapToDouble(a -> a.pointsPossible)
                 .sum();
 
         double totalSemesterPointsPossible = totalGradedPointsPossible + totalUpcomingPoints;
@@ -304,15 +304,15 @@ public class DashboardService {
         int halfSize = recentGrades.size() / 2;
         double firstHalfAvg = recentGrades.stream()
                 .limit(halfSize)
-                .filter(g -> g.getSubmission().getScore() != null && g.getAssignment().getPointsPossible() != null)
-                .mapToDouble(g -> (g.getSubmission().getScore() / g.getAssignment().getPointsPossible()) * 100)
+                .filter(g -> g.submission.score != null && g.assignment.pointsPossible != null)
+                .mapToDouble(g -> (g.submission.score / g.assignment.pointsPossible) * 100)
                 .average()
                 .orElse(0.0);
 
         double secondHalfAvg = recentGrades.stream()
                 .skip(halfSize)
-                .filter(g -> g.getSubmission().getScore() != null && g.getAssignment().getPointsPossible() != null)
-                .mapToDouble(g -> (g.getSubmission().getScore() / g.getAssignment().getPointsPossible()) * 100)
+                .filter(g -> g.submission.score != null && g.assignment.pointsPossible != null)
+                .mapToDouble(g -> (g.submission.score / g.assignment.pointsPossible) * 100)
                 .average()
                 .orElse(0.0);
 
@@ -334,7 +334,7 @@ public class DashboardService {
         int downCount = 0;
 
         for (CourseCardData card : courseCards) {
-            String trend = card.getTrend();
+            String trend = card.trend;
             if ("up".equals(trend)) {
                 upCount++;
             } else if ("down".equals(trend)) {

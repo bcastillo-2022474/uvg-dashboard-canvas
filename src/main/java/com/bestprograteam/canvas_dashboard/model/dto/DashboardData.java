@@ -9,9 +9,9 @@ import java.util.List;
  */
 public class DashboardData {
 
-    private List<CourseCardData> courseCards;
-    private List<Assignment> upcomingAssignments;
-    private SemesterSummary summary;
+    public List<CourseCardData> courseCards;
+    public List<Assignment> upcomingAssignments;
+    public SemesterSummary summary;
 
     public DashboardData() {}
 
@@ -19,30 +19,6 @@ public class DashboardData {
                         SemesterSummary summary) {
         this.courseCards = courseCards;
         this.upcomingAssignments = upcomingAssignments;
-        this.summary = summary;
-    }
-
-    public List<CourseCardData> getCourseCards() {
-        return courseCards;
-    }
-
-    public void setCourseCards(List<CourseCardData> courseCards) {
-        this.courseCards = courseCards;
-    }
-
-    public List<Assignment> getUpcomingAssignments() {
-        return upcomingAssignments;
-    }
-
-    public void setUpcomingAssignments(List<Assignment> upcomingAssignments) {
-        this.upcomingAssignments = upcomingAssignments;
-    }
-
-    public SemesterSummary getSummary() {
-        return summary;
-    }
-
-    public void setSummary(SemesterSummary summary) {
         this.summary = summary;
     }
 

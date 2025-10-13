@@ -24,23 +24,21 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-3 md:p-6">
 <div class="max-w-7xl mx-auto space-y-4">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-            <div class="h-10 w-10 md:h-12 md:w-12 ring-2 ring-blue-100 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                JD
+    <!-- Header - Mobile Friendly -->
+    <div class="bg-white/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+                <div class="h-12 w-12 md:h-14 md:w-14 ring-2 ring-blue-100 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-lg md:text-xl flex-shrink-0">
+                    <span th:text="${userInitials}">JD</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h1 class="text-lg md:text-2xl font-bold text-gray-900 truncate">
+                        Welcome back, <span th:text="${userName ?: 'Student'}">Student</span> 👋
+                    </h1>
+                    <p class="text-xs md:text-sm text-gray-600 truncate">All your course data in one place</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl md:text-2xl font-bold text-gray-900">Welcome back, <span th:text="${userName ?: 'Student'}"></span> 👋</h1>
-                <p class="text-sm md:text-base text-gray-600">All your course data in one place</p>
-            </div>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button class="relative bg-transparent h-8 w-8 md:h-10 md:w-10 border border-gray-300 rounded-md flex items-center justify-center hover:bg-gray-50">
-                <i data-lucide="bell" class="h-3 w-3 md:h-4 md:w-4"></i>
-                <span class="absolute -top-1 -right-1 h-2 w-2 md:h-3 md:w-3 bg-red-500 rounded-full"></span>
-            </button>
-            <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+            <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap flex-shrink-0">
                 Logout
             </a>
         </div>

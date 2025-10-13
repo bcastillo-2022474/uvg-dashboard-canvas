@@ -91,7 +91,7 @@ public class CanvasSubmissionRepository implements SubmissionRepository {
     public Submission findSubmissionByAssignmentId(Integer courseId, Integer assignmentId) {
         List<Submission> submissions = findSubmissionsByCourseId(courseId);
         return submissions.stream()
-                .filter(s -> s.getAssignmentId().equals(assignmentId))
+                .filter(s -> s.assignmentId.equals(assignmentId))
                 .findFirst()
                 .orElse(null);
     }
@@ -100,8 +100,8 @@ public class CanvasSubmissionRepository implements SubmissionRepository {
     public List<Submission> findRecentGrades(Integer courseId, Integer limit) {
         List<Submission> submissions = findSubmissionsByCourseId(courseId);
         return submissions.stream()
-                .filter(s -> s.getGradedAt() != null)
-                .sorted(Comparator.comparing(Submission::getGradedAt).reversed())
+                .filter(s -> s.gradedAt != null)
+                .sorted(Comparator.comparing((Submission s) -> s.gradedAt).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
     }

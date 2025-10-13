@@ -63,13 +63,13 @@ public class MockAssignmentRepository implements AssignmentRepository {
     private Assignment createAssignment(Integer courseId, String name, Double points,
                                        Integer groupId, String state, int daysOffset) {
         Assignment assignment = new Assignment();
-        assignment.setId(assignmentIdCounter++);
-        assignment.setCourseId(courseId);
-        assignment.setName(name);
-        assignment.setPointsPossible(points);
-        assignment.setAssignmentGroupId(groupId);
-        assignment.setWorkflowState(state);
-        assignment.setDueAt(LocalDateTime.now().plusDays(daysOffset));
+        assignment.id = assignmentIdCounter++;
+        assignment.courseId = courseId;
+        assignment.name = name;
+        assignment.pointsPossible = points;
+        assignment.assignmentGroupId = groupId;
+        assignment.workflowState = state;
+        assignment.dueAt = LocalDateTime.now().plusDays(daysOffset);
         return assignment;
     }
 
@@ -85,7 +85,7 @@ public class MockAssignmentRepository implements AssignmentRepository {
             return null;
         }
         return assignments.stream()
-                .filter(a -> a.getId().equals(assignmentId))
+                .filter(a -> a.id.equals(assignmentId))
                 .findFirst()
                 .orElse(null);
     }
@@ -101,8 +101,8 @@ public class MockAssignmentRepository implements AssignmentRepository {
         LocalDateTime future = now.plusDays(days);
 
         return assignments.stream()
-                .filter(a -> a.getDueAt() != null)
-                .filter(a -> a.getDueAt().isAfter(now) && a.getDueAt().isBefore(future))
+                .filter(a -> a.dueAt != null)
+                .filter(a -> a.dueAt.isAfter(now) && a.dueAt.isBefore(future))
                 .collect(Collectors.toList());
     }
 }

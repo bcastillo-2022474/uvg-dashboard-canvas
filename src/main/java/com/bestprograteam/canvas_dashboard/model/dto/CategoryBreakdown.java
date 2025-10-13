@@ -9,12 +9,12 @@ import com.bestprograteam.canvas_dashboard.model.entities.AssignmentGroup;
  */
 public class CategoryBreakdown {
 
-    private AssignmentGroup group;
-    private Double currentScore;          // Computed percentage for this category
-    private Integer pointsEarned;         // Sum of scores in this category
-    private Integer pointsTotal;          // Sum of points_possible in this category
-    private Integer completedAssignments; // Count of graded submissions
-    private Integer totalAssignments;     // Count of all assignments in category
+    public AssignmentGroup group;
+    public Double currentScore;          // Computed percentage for this category
+    public Integer pointsEarned;         // Sum of scores in this category
+    public Integer pointsTotal;          // Sum of points_possible in this category
+    public Integer completedAssignments; // Count of graded submissions
+    public Integer totalAssignments;     // Count of all assignments in category
 
     public CategoryBreakdown() {}
 
@@ -25,54 +25,6 @@ public class CategoryBreakdown {
         this.pointsEarned = pointsEarned;
         this.pointsTotal = pointsTotal;
         this.completedAssignments = completedAssignments;
-        this.totalAssignments = totalAssignments;
-    }
-
-    public AssignmentGroup getGroup() {
-        return group;
-    }
-
-    public void setGroup(AssignmentGroup group) {
-        this.group = group;
-    }
-
-    public Double getCurrentScore() {
-        return currentScore;
-    }
-
-    public void setCurrentScore(Double currentScore) {
-        this.currentScore = currentScore;
-    }
-
-    public Integer getPointsEarned() {
-        return pointsEarned;
-    }
-
-    public void setPointsEarned(Integer pointsEarned) {
-        this.pointsEarned = pointsEarned;
-    }
-
-    public Integer getPointsTotal() {
-        return pointsTotal;
-    }
-
-    public void setPointsTotal(Integer pointsTotal) {
-        this.pointsTotal = pointsTotal;
-    }
-
-    public Integer getCompletedAssignments() {
-        return completedAssignments;
-    }
-
-    public void setCompletedAssignments(Integer completedAssignments) {
-        this.completedAssignments = completedAssignments;
-    }
-
-    public Integer getTotalAssignments() {
-        return totalAssignments;
-    }
-
-    public void setTotalAssignments(Integer totalAssignments) {
         this.totalAssignments = totalAssignments;
     }
 

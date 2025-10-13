@@ -9,12 +9,12 @@ import java.util.List;
  */
 public class CourseCardData {
 
-    private CourseWithGrades courseWithGrades;
-    private List<RecentGrade> recentGrades;
-    private List<CategoryBreakdown> categoryBreakdown;
-    private List<Assignment> upcomingAssignments;
-    private String trend;
-    private double remainingPoints;
+    public CourseWithGrades courseWithGrades;
+    public List<RecentGrade> recentGrades;
+    public List<CategoryBreakdown> categoryBreakdown;
+    public List<Assignment> upcomingAssignments;
+    public String trend;
+    public double remainingPoints;
 
     public CourseCardData() {}
 
@@ -26,54 +26,6 @@ public class CourseCardData {
         this.categoryBreakdown = categoryBreakdown;
         this.upcomingAssignments = upcomingAssignments;
         this.trend = trend;
-        this.remainingPoints = remainingPoints;
-    }
-
-    public CourseWithGrades getCourseWithGrades() {
-        return courseWithGrades;
-    }
-
-    public void setCourseWithGrades(CourseWithGrades courseWithGrades) {
-        this.courseWithGrades = courseWithGrades;
-    }
-
-    public List<RecentGrade> getRecentGrades() {
-        return recentGrades;
-    }
-
-    public void setRecentGrades(List<RecentGrade> recentGrades) {
-        this.recentGrades = recentGrades;
-    }
-
-    public List<CategoryBreakdown> getCategoryBreakdown() {
-        return categoryBreakdown;
-    }
-
-    public void setCategoryBreakdown(List<CategoryBreakdown> categoryBreakdown) {
-        this.categoryBreakdown = categoryBreakdown;
-    }
-
-    public List<Assignment> getUpcomingAssignments() {
-        return upcomingAssignments;
-    }
-
-    public void setUpcomingAssignments(List<Assignment> upcomingAssignments) {
-        this.upcomingAssignments = upcomingAssignments;
-    }
-
-    public String getTrend() {
-        return trend;
-    }
-
-    public void setTrend(String trend) {
-        this.trend = trend;
-    }
-
-    public double getRemainingPoints() {
-        return remainingPoints;
-    }
-
-    public void setRemainingPoints(double remainingPoints) {
         this.remainingPoints = remainingPoints;
     }
 

@@ -9,29 +9,13 @@ import com.bestprograteam.canvas_dashboard.model.entities.Submission;
  */
 public class RecentGrade {
 
-    private Submission submission;
-    private Assignment assignment;
+    public Submission submission;
+    public Assignment assignment;
 
     public RecentGrade() {}
 
     public RecentGrade(Submission submission, Assignment assignment) {
         this.submission = submission;
-        this.assignment = assignment;
-    }
-
-    public Submission getSubmission() {
-        return submission;
-    }
-
-    public void setSubmission(Submission submission) {
-        this.submission = submission;
-    }
-
-    public Assignment getAssignment() {
-        return assignment;
-    }
-
-    public void setAssignment(Assignment assignment) {
         this.assignment = assignment;
     }
 

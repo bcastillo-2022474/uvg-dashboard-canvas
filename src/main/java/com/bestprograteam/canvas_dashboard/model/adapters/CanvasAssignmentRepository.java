@@ -91,7 +91,7 @@ public class CanvasAssignmentRepository implements AssignmentRepository {
     public Assignment findAssignmentById(Integer courseId, Integer assignmentId) {
         List<Assignment> assignments = findAssignmentsByCourseId(courseId);
         return assignments.stream()
-                .filter(a -> a.getId().equals(assignmentId))
+                .filter(a -> a.id.equals(assignmentId))
                 .findFirst()
                 .orElse(null);
     }
@@ -103,8 +103,8 @@ public class CanvasAssignmentRepository implements AssignmentRepository {
         LocalDateTime future = now.plusDays(days);
 
         return assignments.stream()
-                .filter(a -> a.getDueAt() != null)
-                .filter(a -> a.getDueAt().isAfter(now) && a.getDueAt().isBefore(future))
+                .filter(a -> a.dueAt != null)
+                .filter(a -> a.dueAt.isAfter(now) && a.dueAt.isBefore(future))
                 .collect(Collectors.toList());
     }
 

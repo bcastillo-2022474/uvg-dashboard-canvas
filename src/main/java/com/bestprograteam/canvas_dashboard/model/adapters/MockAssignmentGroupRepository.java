@@ -53,11 +53,11 @@ public class MockAssignmentGroupRepository implements AssignmentGroupRepository 
     private AssignmentGroup createGroup(Integer id, Integer courseId, String name,
                                        Integer position, Double weight) {
         AssignmentGroup group = new AssignmentGroup();
-        group.setId(id);
-        group.setCourseId(courseId);
-        group.setName(name);
-        group.setPosition(position);
-        group.setGroupWeight(weight);
+        group.id = id;
+        group.courseId = courseId;
+        group.name = name;
+        group.position = position;
+        group.groupWeight = weight;
         return group;
     }
 
@@ -73,7 +73,7 @@ public class MockAssignmentGroupRepository implements AssignmentGroupRepository 
             return null;
         }
         return groups.stream()
-                .filter(g -> g.getId().equals(groupId))
+                .filter(g -> g.id.equals(groupId))
                 .findFirst()
                 .orElse(null);
     }
