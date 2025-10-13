@@ -47,5 +47,78 @@ public class Course {
     public float getTotalPointsEarned() {
         return currentGrade;
     }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getEnrollmentType() {
+        return enrollmentType;
+    }
+
+    public void setEnrollmentType(String enrollmentType) {
+        this.enrollmentType = enrollmentType;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public float getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(float totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
+    public float getCurrentGrade() {
+        return currentGrade;
+    }
+
+    public void setCurrentGrade(float currentGrade) {
+        this.currentGrade = currentGrade;
+    }
 }
 
