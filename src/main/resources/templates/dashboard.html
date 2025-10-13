@@ -31,7 +31,7 @@
                 JD
             </div>
             <div>
-                <h1 class="text-xl md:text-2xl font-bold text-gray-900">Welcome back, <span th:text="${userName ?: 'Student'}">Student</span> 👋</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-900">Welcome back, <span th:text="${userName ?: 'Student'}"></span> 👋</h1>
                 <p class="text-sm md:text-base text-gray-600">All your course data in one place</p>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 <i data-lucide="target" class="h-4 w-4 md:h-5 md:w-5 text-blue-600"></i>
                 <div>
                     <p class="text-xs md:text-sm text-gray-600">Overall</p>
-                    <p class="text-lg md:text-2xl font-bold text-blue-600" th:text="${#numbers.formatDecimal(dashboardData.summary.overallPercentage, 1, 1)} + '%'">86.0%</p>
+                    <p class="text-lg md:text-2xl font-bold text-blue-600" th:text="${#numbers.formatDecimal(dashboardData.summary.overallPercentage, 1, 1)} + '%'" ></p>
                     <p class="text-xs text-gray-500">Semester</p>
                 </div>
             </div>
@@ -64,8 +64,8 @@
                 <i data-lucide="bar-chart-3" class="h-4 w-4 md:h-5 md:w-5 text-green-600"></i>
                 <div>
                     <p class="text-xs md:text-sm text-gray-600">Graded</p>
-                    <p class="text-lg md:text-2xl font-bold text-green-600" th:text="${#numbers.formatDecimal(dashboardData.summary.totalGradedPercentage, 1, 1)} + '%'">91.8%</p>
-                    <p class="text-xs text-gray-500" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalGradedPointsPossible}">1847/2007</p>
+                    <p class="text-lg md:text-2xl font-bold text-green-600" th:text="${#numbers.formatDecimal(dashboardData.summary.totalGradedPercentage, 1, 1)} + '%'" ></p>
+                    <p class="text-xs text-gray-500" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalGradedPointsPossible}" ></p>
                 </div>
             </div>
         </div>
@@ -75,7 +75,7 @@
                 <i data-lucide="check-circle" class="h-4 w-4 md:h-5 md:w-5 text-purple-600"></i>
                 <div>
                     <p class="text-xs md:text-sm text-gray-600">Completed</p>
-                    <p class="text-lg md:text-2xl font-bold text-purple-600" th:text="${dashboardData.summary.totalCompletedAssignments}">50</p>
+                    <p class="text-lg md:text-2xl font-bold text-purple-600" th:text="${dashboardData.summary.totalCompletedAssignments}" ></p>
                     <p class="text-xs text-gray-500">assignments</p>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                 <i data-lucide="alert-triangle" class="h-4 w-4 md:h-5 md:w-5 text-orange-600"></i>
                 <div>
                     <p class="text-xs md:text-sm text-gray-600">Due Soon</p>
-                    <p class="text-lg md:text-2xl font-bold text-orange-600" th:text="${dashboardData.summary.upcomingAssignments}">5</p>
+                    <p class="text-lg md:text-2xl font-bold text-orange-600" th:text="${dashboardData.summary.upcomingAssignments}" ></p>
                     <p class="text-xs text-gray-500">this week</p>
                 </div>
             </div>
@@ -107,14 +107,14 @@
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600">Tasks Completed</span>
-                        <span class="font-semibold">4/5</span>
+                        <span class="font-semibold"></span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600">Points Earned</span>
-                        <span class="font-semibold text-green-600">91 pts</span>
+                        <span class="font-semibold text-green-600"></span>
                     </div>
                 </div>
             </div>
@@ -128,11 +128,12 @@
                     <span>Predicted Grade</span>
                 </h3>
             </div>
-            <div class="text-center p-4 pt-0">
-                <div class="text-3xl font-bold text-green-600 mb-2">87%</div>
-                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        On Track for B+
-                    </span>
+            <div th:if="${predictionData.isPredictionAvailable()}" class="text-center p-4 pt-0">
+                <div class="text-3xl font-bold text-green-600 mb-2" th:text="${#numbers.formatDecimal(predictionData.predictedScore, 1, 1)} + '%'" ></div>
+                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded" th:text="'On Track for ' + ${predictionData.predictedLetterGrade}"></span>
+            </div>
+            <div th:if="${!predictionData.isPredictionAvailable()}" class="text-center p-4 pt-0">
+                <p class="text-sm text-gray-600 p-4">Not enough data to make a prediction.</p>
             </div>
         </div>
 
@@ -144,15 +145,15 @@
             <div class="p-4 pt-0 space-y-3">
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-600">Total Semester</span>
-                    <span class="font-semibold" th:text="${dashboardData.summary.totalSemesterPoints} + '/' + ${dashboardData.summary.totalSemesterPointsPossible}">1847/2127</span>
+                    <span class="font-semibold" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalSemesterPointsPossible}"></span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-600">Graded Only</span>
-                    <span class="font-semibold text-green-600" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalGradedPointsPossible}">1847/2007</span>
+                    <span class="font-semibold text-green-600" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalGradedPointsPossible}"></span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-600">Remaining</span>
-                    <span class="font-semibold text-blue-600" th:text="${dashboardData.summary.totalSemesterPointsPossible - dashboardData.summary.totalSemesterPoints}">280</span>
+                    <span class="font-semibold text-blue-600" th:text="${dashboardData.summary.totalUpcomingPoints}"></span>
                 </div>
             </div>
         </div>
@@ -171,17 +172,17 @@
                 <div class="w-3 h-3 rounded-full bg-blue-500"></div>
                 <div>
                     <h3 class="font-semibold text-sm md:text-base text-gray-900 leading-tight"
-                        th:text="${courseCard.courseWithGrades.course.name}">Course Name</h3>
+                        th:text="${courseCard.courseWithGrades.course.name}"></h3>
                     <p class="text-xs text-gray-600"
-                       th:text="${courseCard.courseWithGrades.course.code}">CS2021</p>
+                       th:text="${courseCard.courseWithGrades.course.code}"></p>
                 </div>
             </div>
             <div class="text-right">
                 <span class="bg-gray-100 text-gray-800 text-sm px-2 py-1 rounded"
-                      th:text="${courseCard.courseWithGrades.enrollment.currentGrade}">B+</span>
+                      th:text="${courseCard.courseWithGrades.enrollment.currentGrade}"></span>
                 <div class="flex items-center mt-1">
                     <span class="text-lg font-bold text-blue-600"
-                          th:text="${#numbers.formatDecimal(courseCard.courseWithGrades.enrollment.currentScore, 1, 1)} + '%'">87.7%</span>
+                          th:text="${#numbers.formatDecimal(courseCard.courseWithGrades.enrollment.currentScore, 1, 1)} + '%'" ></span>
                     <i th:data-lucide="${courseCard.trend == 'up' ? 'trending-up' : (courseCard.trend == 'down' ? 'trending-down' : 'minus')}"
                        th:class="${'h-3 w-3 ml-1 ' + (courseCard.trend == 'up' ? 'text-green-500' : (courseCard.trend == 'down' ? 'text-red-500' : 'text-gray-400'))}"
                        class="h-3 w-3 text-green-500 ml-1"></i>
@@ -192,11 +193,15 @@
 
     <div class="p-4 pt-0 space-y-4">
         <!-- Points Summary (removed semester points to simplify) -->
-        <div class="grid grid-cols-1 gap-3 text-xs">
+        <div class="grid grid-cols-2 gap-3 text-xs">
             <div class="bg-blue-50 p-2 rounded">
                 <p class="text-blue-600 font-medium">Current Score</p>
                 <p class="font-bold text-blue-800"
-                   th:text="${#numbers.formatDecimal(courseCard.courseWithGrades.enrollment.currentScore, 1, 1)} + '%'">87.7%</p>
+                   th:text="${#numbers.formatDecimal(courseCard.courseWithGrades.enrollment.currentScore, 1, 1)} + '%'" ></p>
+            </div>
+            <div class="bg-gray-50 p-2 rounded">
+                <p class="text-gray-600 font-medium">Remaining</p>
+                <p class="font-bold text-gray-800" th:text="${#numbers.formatDecimal(courseCard.remainingPoints, 1, 0)} + '%'"></p>
             </div>
         </div>
 
@@ -205,22 +210,22 @@
             <button th:onclick="'toggleGrades(\'course-' + ${iterStat.index} + '\')'"
                     class="w-full justify-between p-2 h-auto text-left hover:bg-gray-50 rounded flex items-center">
                 <span class="text-xs font-semibold text-gray-700"
-                      th:text="'Recent Grades (' + ${courseCard.recentGrades.size()} + ')'">Recent Grades (5)</span>
+                      th:text="'Recent Grades (' + ${courseCard.recentGrades.size()} + ')'"></span>
                 <i data-lucide="chevron-down" class="h-3 w-3" th:id="'course-' + ${iterStat.index} + '-chevron'"></i>
             </button>
             <div th:id="'course-' + ${iterStat.index} + '-grades'" class="collapsible-content space-y-1 mt-2">
                 <div th:each="recentGrade : ${courseCard.recentGrades}"
                      class="flex justify-between items-center text-xs bg-gray-50 p-2 rounded">
                     <div class="flex-1 mr-2">
-                        <span class="truncate block" th:text="${recentGrade.assignment.name}">Assignment Name</span>
+                        <span class="truncate block" th:text="${recentGrade.assignment.name}"></span>
                         <span class="text-gray-500"
-                              th:text="${recentGrade.submission.gradedAt != null ? #temporals.format(recentGrade.submission.gradedAt, 'MMM dd') : 'N/A'}">Jan 15</span>
+                              th:text="${recentGrade.submission.gradedAt != null ? #temporals.format(recentGrade.submission.gradedAt, 'MMM dd') : 'N/A'}"></span>
                     </div>
                     <div class="text-right">
                         <span class="font-semibold text-green-600"
-                              th:text="${recentGrade.assignment.pointsPossible > 0 ? #numbers.formatDecimal((recentGrade.submission.score / recentGrade.assignment.pointsPossible) * 100, 1, 0) + '%' : 'N/A'}">92%</span>
+                              th:text="${recentGrade.submission.score != null and recentGrade.assignment.pointsPossible > 0 ? #numbers.formatDecimal((recentGrade.submission.score / recentGrade.assignment.pointsPossible) * 100, 1, 0) + '%' : 'N/A'}"></span>
                         <p class="text-gray-500"
-                           th:text="${recentGrade.submission.score} + '/' + ${recentGrade.assignment.pointsPossible}">46/50</p>
+                           th:text="${recentGrade.submission.score != null ? recentGrade.submission.score : '-'} + '/' + ${recentGrade.assignment.pointsPossible}"></p>
                     </div>
                 </div>
             </div>
@@ -233,12 +238,12 @@
                 <div th:each="category : ${courseCard.categoryBreakdown}"
                      class="flex justify-between items-center text-xs">
                     <span class="text-gray-600"
-                          th:text="${category.group.name} + ' (' + ${#numbers.formatDecimal(category.group.groupWeight, 1, 0)} + '%)'">Exams (40%)</span>
+                          th:text="${category.group.name} + ' (' + ${#numbers.formatDecimal(category.group.groupWeight, 1, 0)} + '%)'"></span>
                     <div class="text-right">
                         <span class="font-medium"
-                              th:text="${#numbers.formatDecimal(category.currentScore, 1, 0)} + '%'">84%</span>
+                              th:text="${#numbers.formatDecimal(category.currentScore, 1, 0)} + '%'" ></span>
                         <p class="text-gray-500"
-                           th:text="${category.pointsEarned} + '/' + ${category.pointsTotal}">168/200</p>
+                           th:text="${category.pointsEarned} + '/' + ${category.pointsTotal}"></p>
                     </div>
                 </div>
             </div>
@@ -252,13 +257,13 @@
                      class="flex items-center justify-between text-xs bg-amber-50 p-2 rounded border border-amber-200">
                     <div class="flex items-center space-x-1">
                         <i data-lucide="file-text" class="h-3 w-3"></i>
-                        <span class="truncate" th:text="${assignment.name}">Assignment Name</span>
+                        <span class="truncate" th:text="${assignment.name}"></span>
                     </div>
                     <div class="text-right">
                         <p class="font-medium text-amber-800"
-                           th:text="${assignment.dueAt != null ? #temporals.format(assignment.dueAt, 'MMM dd') : 'No due date'}">Jan 22</p>
+                           th:text="${assignment.dueAt != null ? #temporals.format(assignment.dueAt, 'MMM dd') : 'No due date'}"></p>
                         <p class="text-amber-600"
-                           th:text="${assignment.pointsPossible} + ' pts'">100 pts</p>
+                           th:text="${assignment.pointsPossible} + ' pts'"></p>
                     </div>
                 </div>
             </div>
@@ -277,7 +282,7 @@
     </div>
 
     <!-- Grade Progression Chart -->
-    <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg">
+    <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg" th:if="${predictionData.isPredictionAvailable()}">
         <div class="p-4 pb-3">
             <h3 class="text-lg font-semibold flex items-center space-x-2">
                 <i data-lucide="trending-up" class="h-5 w-5 text-purple-600"></i>
@@ -286,46 +291,11 @@
             <p class="text-sm text-gray-600">Your academic performance trend over time</p>
         </div>
         <div class="p-4 pt-0">
-            <div class="h-[300px] flex items-end justify-between space-x-2">
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-200 rounded-t" style="height: 170px;"></div>
-                    <span class="text-xs text-gray-600">Week 1</span>
-                    <span class="text-xs font-semibold">85%</span>
-                </div>
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-300 rounded-t" style="height: 204px;"></div>
-                    <span class="text-xs text-gray-600">Week 2</span>
-                    <span class="text-xs font-semibold">88%</span>
-                </div>
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-200 rounded-t" style="height: 136px;"></div>
-                    <span class="text-xs text-gray-600">Week 3</span>
-                    <span class="text-xs font-semibold">82%</span>
-                </div>
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-400 rounded-t" style="height: 238px;"></div>
-                    <span class="text-xs text-gray-600">Week 4</span>
-                    <span class="text-xs font-semibold">90%</span>
-                </div>
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-300 rounded-t" style="height: 187px;"></div>
-                    <span class="text-xs text-gray-600">Week 5</span>
-                    <span class="text-xs font-semibold">87%</span>
-                </div>
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-400 rounded-t" style="height: 221px;"></div>
-                    <span class="text-xs text-gray-600">Week 6</span>
-                    <span class="text-xs font-semibold">89%</span>
-                </div>
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-500 rounded-t" style="height: 255px;"></div>
-                    <span class="text-xs text-gray-600">Week 7</span>
-                    <span class="text-xs font-semibold">91%</span>
-                </div>
-                <div class="flex flex-col items-center space-y-2 flex-1">
-                    <div class="w-full bg-purple-300 rounded-t" style="height: 187px;"></div>
-                    <span class="text-xs text-gray-600">Week 8</span>
-                    <span class="text-xs font-semibold">87%</span>
+            <div class="h-[300px] flex items-end justify-between space-x-2 overflow-x-scroll">
+                <div th:each="dataPoint : ${predictionData.gradeProgression}" class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-300 rounded-t" th:style="'height: ' + ${dataPoint.score * 2.5} + 'px;'"></div>
+                    <span class="text-xs text-gray-600" th:text="${dataPoint.label}"></span>
+                    <span class="text-xs font-semibold" th:text="${#numbers.formatDecimal(dataPoint.score, 1, 0)} + '%'" ></span>
                 </div>
             </div>
         </div>

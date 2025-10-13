@@ -14,11 +14,4 @@ public interface CourseRepository {
      * @return List of courses with enrollment_state=active
      */
     List<Course> findAllActiveCourses();
-
-    /**
-     * Get a specific course by ID.
-     * @param courseId Canvas course ID
-     * @return Course or null if not found
-     */
-    Course findCourseById(Integer courseId);
 }

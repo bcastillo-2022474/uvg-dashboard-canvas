@@ -3,8 +3,8 @@ package com.bestprograteam.canvas_dashboard.model.adapters;
 import com.bestprograteam.canvas_dashboard.model.entities.AssignmentGroup;
 import com.bestprograteam.canvas_dashboard.model.repositories.AssignmentGroupRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,7 +21,6 @@ import java.util.Map;
 
 @Primary
 @Repository("canvasAssignmentGroupRepository")
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CanvasAssignmentGroupRepository implements AssignmentGroupRepository {
 
     @Value("${canvas.instance.url}")
@@ -34,8 +30,8 @@ public class CanvasAssignmentGroupRepository implements AssignmentGroupRepositor
 
     public CanvasAssignmentGroupRepository() {
         this.restTemplate = new RestTemplateBuilder()
-                .setConnectTimeout(Duration.ofSeconds(10))
-                .setReadTimeout(Duration.ofSeconds(10))
+                .readTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(10))
                 .build();
     }
 
@@ -54,6 +50,7 @@ public class CanvasAssignmentGroupRepository implements AssignmentGroupRepositor
     @Override
     public List<AssignmentGroup> findAssignmentGroupsByCourseId(Integer courseId) {
         try {
+            System.out.println("[CanvasAssignmentGroupRepository] Fetching assignment groups for course " + courseId + "...");
             String apiToken = getApiToken();
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + apiToken);
@@ -65,6 +62,7 @@ public class CanvasAssignmentGroupRepository implements AssignmentGroupRepositor
                     entity,
                     List.class
             );
+            System.out.println("[CanvasAssignmentGroupRepository] Successfully fetched " + (response.getBody() != null ? response.getBody().size() : 0) + " assignment groups for course " + courseId);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 List<Map<String, Object>> groupsData = response.getBody();
@@ -80,7 +78,8 @@ public class CanvasAssignmentGroupRepository implements AssignmentGroupRepositor
                 return groups;
             }
         } catch (Exception e) {
-            System.err.println("Error fetching assignment groups for course " + courseId + ": " + e.getMessage());
+            System.err.println("[CanvasAssignmentGroupRepository] ERROR fetching assignment groups for course " + courseId + ": " + e.getMessage());
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }

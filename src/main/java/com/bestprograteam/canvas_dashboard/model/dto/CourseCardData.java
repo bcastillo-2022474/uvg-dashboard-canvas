@@ -14,17 +14,19 @@ public class CourseCardData {
     private List<CategoryBreakdown> categoryBreakdown;
     private List<Assignment> upcomingAssignments;
     private String trend;
+    private double remainingPoints;
 
     public CourseCardData() {}
 
     public CourseCardData(CourseWithGrades courseWithGrades, List<RecentGrade> recentGrades,
                          List<CategoryBreakdown> categoryBreakdown, List<Assignment> upcomingAssignments,
-                         String trend) {
+                         String trend, double remainingPoints) {
         this.courseWithGrades = courseWithGrades;
         this.recentGrades = recentGrades;
         this.categoryBreakdown = categoryBreakdown;
         this.upcomingAssignments = upcomingAssignments;
         this.trend = trend;
+        this.remainingPoints = remainingPoints;
     }
 
     public CourseWithGrades getCourseWithGrades() {
@@ -67,6 +69,14 @@ public class CourseCardData {
         this.trend = trend;
     }
 
+    public double getRemainingPoints() {
+        return remainingPoints;
+    }
+
+    public void setRemainingPoints(double remainingPoints) {
+        this.remainingPoints = remainingPoints;
+    }
+
     @Override
     public String toString() {
         return "CourseCardData{" +
@@ -74,7 +84,8 @@ public class CourseCardData {
                 ", recentGrades=" + recentGrades +
                 ", categoryBreakdown=" + categoryBreakdown +
                 ", upcomingAssignments=" + upcomingAssignments +
-                ", trend='" + trend + '\'' +
+                ", trend='" + trend + "'" +
+                ", remainingPoints=" + remainingPoints +
                 '}';
     }
 }

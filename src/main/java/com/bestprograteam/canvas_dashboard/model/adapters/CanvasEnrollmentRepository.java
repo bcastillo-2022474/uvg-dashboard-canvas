@@ -3,9 +3,8 @@ package com.bestprograteam.canvas_dashboard.model.adapters;
 import com.bestprograteam.canvas_dashboard.model.entities.Enrollment;
 import com.bestprograteam.canvas_dashboard.model.repositories.EnrollmentRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -28,7 +24,6 @@ import java.util.Map;
 
 @Primary
 @Repository("canvasEnrollmentRepository")
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CanvasEnrollmentRepository implements EnrollmentRepository {
 
     @Value("${canvas.instance.url}")

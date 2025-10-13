@@ -81,12 +81,4 @@ public class MockCourseRepository implements CourseRepository {
     public List<Course> findAllActiveCourses() {
         return new ArrayList<>(mockCourses);
     }
-
-    @Override
-    public Course findCourseById(Integer courseId) {
-        return mockCourses.stream()
-                .filter(c -> c.getId().equals(String.valueOf(courseId)))
-                .findFirst()
-                .orElse(null);
-    }
 }

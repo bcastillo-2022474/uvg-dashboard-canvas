@@ -1,7 +1,9 @@
 package com.bestprograteam.canvas_dashboard.controller;
 
 import com.bestprograteam.canvas_dashboard.model.dto.DashboardData;
-import com.bestprograteam.canvas_dashboard.service.DashboardService;
+import com.bestprograteam.canvas_dashboard.model.dto.PredictionData;
+import com.bestprograteam.canvas_dashboard.model.services.DashboardService;
+import com.bestprograteam.canvas_dashboard.model.services.PredictionService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -14,9 +16,11 @@ import java.util.Map;
 public class DashboardController {
 
     private final DashboardService dashboardService;
+    private final PredictionService predictionService;
 
-    public DashboardController(DashboardService dashboardService) {
+    public DashboardController(DashboardService dashboardService, PredictionService predictionService) {
         this.dashboardService = dashboardService;
+        this.predictionService = predictionService;
     }
 
     @GetMapping("/")
@@ -38,6 +42,9 @@ public class DashboardController {
 
                 DashboardData dashboardData = dashboardService.getDashboardData();
                 model.addAttribute("dashboardData", dashboardData);
+
+                PredictionData predictionData = predictionService.calculatePredictions(dashboardData);
+                model.addAttribute("predictionData", predictionData);
             }
         }
         return "dashboard";

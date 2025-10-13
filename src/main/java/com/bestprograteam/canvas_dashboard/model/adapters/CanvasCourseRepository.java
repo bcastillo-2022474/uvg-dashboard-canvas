@@ -3,8 +3,8 @@ package com.bestprograteam.canvas_dashboard.model.adapters;
 import com.bestprograteam.canvas_dashboard.model.entities.Course;
 import com.bestprograteam.canvas_dashboard.model.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ import java.util.Map;
 
 @Primary
 @Repository("canvasCourseRepository")
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CanvasCourseRepository implements CourseRepository {
 
     @Value("${canvas.instance.url}")
@@ -35,8 +31,8 @@ public class CanvasCourseRepository implements CourseRepository {
 
     public CanvasCourseRepository() {
         this.restTemplate = new RestTemplateBuilder()
-                .setConnectTimeout(Duration.ofSeconds(10))
-                .setReadTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(10))
+                .readTimeout(Duration.ofSeconds(10))
                 .build();
     }
 
@@ -87,15 +83,6 @@ public class CanvasCourseRepository implements CourseRepository {
             e.printStackTrace();
         }
         return new ArrayList<>();
-    }
-
-    @Override
-    public Course findCourseById(Integer courseId) {
-        List<Course> courses = findAllActiveCourses();
-        return courses.stream()
-                .filter(c -> c.getId().equals(String.valueOf(courseId)))
-                .findFirst()
-                .orElse(null);
     }
 
     private Course mapToCourse(Map<String, Object> data) {
