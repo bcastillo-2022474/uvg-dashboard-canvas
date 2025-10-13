@@ -1,5 +1,6 @@
 package com.bestprograteam.canvas_dashboard.model.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PredictionData {
@@ -11,6 +12,7 @@ public class PredictionData {
 
     public PredictionData() {
         this.predictionAvailable = false;
+        this.gradeProgression = new ArrayList<>();
     }
 
     public PredictionData(double predictedScore, String predictedLetterGrade, List<ChartDataPoint> gradeProgression) {
