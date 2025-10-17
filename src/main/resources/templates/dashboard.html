@@ -1,3 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 500px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #3B82F6 var(--progress, 0%), #E5E7EB var(--progress, 0%));
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-3 md:p-6">
 <div class="max-w-7xl mx-auto space-y-4">
@@ -709,6 +732,203 @@
     </div>
 </div>
     </div>
+
+    <!-- Grade Progression Chart -->
+    <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg">
+    <div class="shadow-sm border-0 bg-white/70 backdrop-blur-sm rounded-lg" th:if="${predictionData.isPredictionAvailable()}">
+        <div class="p-4 pb-3">
+            <h3 class="text-lg font-semibold flex items-center space-x-2">
+                <i data-lucide="trending-up" class="h-5 w-5 text-purple-600"></i>
+            </h3>
+            <p class="text-sm text-gray-600">Your academic performance trend over time</p>
+        </div>
+        <div class="p-4 pt-0">
+            <div class="h-[300px] flex items-end justify-between space-x-2">
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-200 rounded-t" style="height: 170px;"></div>
+                    <span class="text-xs text-gray-600">Week 1</span>
+                    <span class="text-xs font-semibold">85%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-300 rounded-t" style="height: 204px;"></div>
+                    <span class="text-xs text-gray-600">Week 2</span>
+                    <span class="text-xs font-semibold">88%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-200 rounded-t" style="height: 136px;"></div>
+                    <span class="text-xs text-gray-600">Week 3</span>
+                    <span class="text-xs font-semibold">82%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-400 rounded-t" style="height: 238px;"></div>
+                    <span class="text-xs text-gray-600">Week 4</span>
+                    <span class="text-xs font-semibold">90%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-300 rounded-t" style="height: 187px;"></div>
+                    <span class="text-xs text-gray-600">Week 5</span>
+                    <span class="text-xs font-semibold">87%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-400 rounded-t" style="height: 221px;"></div>
+                    <span class="text-xs text-gray-600">Week 6</span>
+                    <span class="text-xs font-semibold">89%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-500 rounded-t" style="height: 255px;"></div>
+                    <span class="text-xs text-gray-600">Week 7</span>
+                    <span class="text-xs font-semibold">91%</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2 flex-1">
+                    <div class="w-full bg-purple-300 rounded-t" style="height: 187px;"></div>
+                    <span class="text-xs text-gray-600">Week 8</span>
+                    <span class="text-xs font-semibold">87%</span>
+                </div>
+            </div>
+        <div class="p-4 pt-0 overflow-x-auto">
+            <svg id="progressionChart" class="h-[300px]" preserveAspectRatio="none">
+                <!-- Gradient for area under line -->
+                <defs>
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9333ea;stop-opacity:0.2" />
+                        <stop offset="100%" style="stop-color:#9333ea;stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Grid lines (will be added dynamically) -->
+                <g id="gridLines"></g>
+
+                <!-- Y-axis labels (will be added dynamically) -->
+                <g id="yAxisLabels"></g>
+
+                <!-- Area fill -->
+                <polygon id="areaFill" fill="url(#lineGradient)"/>
+
+                <!-- The line -->
+                <polyline id="trendLine" stroke="#9333ea" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+                <!-- Data points -->
+                <g id="dataPoints"></g>
+            </svg>
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                (function() {
+                    const data = /*[[${predictionData.gradeProgression}]]*/ [];
+                    if (!data || data.length === 0) return;
+
+                    const svg = document.getElementById('progressionChart');
+                    const trendLine = document.getElementById('trendLine');
+                    const areaFill = document.getElementById('areaFill');
+                    const dataPointsGroup = document.getElementById('dataPoints');
+                    const gridLines = document.getElementById('gridLines');
+                    const yAxisLabels = document.getElementById('yAxisLabels');
+
+                    // Configuration
+                    const leftMargin = 60;
+                    const rightMargin = 20;
+                    const topMargin = 30;
+                    const bottomMargin = 40;
+                    const pointSpacing = 80; // More space between points for readability
+                    const chartHeight = 300;
+
+                    // Calculate dynamic width based on number of data points
+                    const chartWidth = leftMargin + (data.length * pointSpacing) + rightMargin;
+                    svg.setAttribute('width', chartWidth);
+                    svg.setAttribute('height', chartHeight);
+                    svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`);
+
+                    // Find min and max values with padding
+                    const scores = data.map(d => d.score);
+                    const minScore = Math.max(0, Math.min(...scores) - 5); // Don't go below 0, add 5% padding
+                    const maxScore = Math.min(100, Math.max(...scores) + 5); // Don't go above 100, add 5% padding
+                    const scoreRange = maxScore - minScore;
+
+                    // Chart dimensions
+                    const plotHeight = chartHeight - topMargin - bottomMargin;
+                    const plotWidth = chartWidth - leftMargin - rightMargin;
+                    const plotTop = topMargin;
+                    const plotBottom = chartHeight - bottomMargin;
+
+                    // Create 5 grid lines and labels
+                    for (let i = 0; i <= 4; i++) {
+                        const value = minScore + (scoreRange * i / 4);
+                        const y = plotBottom - (plotHeight * i / 4);
+
+                        // Grid line
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', leftMargin);
+                        line.setAttribute('y1', y);
+                        line.setAttribute('x2', chartWidth - rightMargin);
+                        line.setAttribute('y2', y);
+                        line.setAttribute('stroke', '#e5e7eb');
+                        line.setAttribute('stroke-width', '1');
+                        gridLines.appendChild(line);
+
+                        // Y-axis label
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('x', leftMargin - 10);
+                        label.setAttribute('y', y + 4);
+                        label.setAttribute('font-size', '12');
+                        label.setAttribute('fill', '#6b7280');
+                        label.setAttribute('text-anchor', 'end');
+                        label.textContent = Math.round(value) + '%';
+                        yAxisLabels.appendChild(label);
+                    }
+
+                    // Calculate coordinates for data points
+                    const points = [];
+                    data.forEach((point, index) => {
+                        const x = leftMargin + (index * pointSpacing);
+                        const normalizedScore = (point.score - minScore) / scoreRange;
+                        const y = plotBottom - (normalizedScore * plotHeight);
+                        points.push({ x, y, label: point.label, score: point.score });
+                    });
+
+                    // Build polyline points string
+                    const linePoints = points.map(p => `${p.x},${p.y}`).join(' ');
+                    trendLine.setAttribute('points', linePoints);
+
+                    // Build polygon for filled area
+                    const areaPoints = `${leftMargin},${plotBottom} ${linePoints} ${points[points.length-1].x},${plotBottom}`;
+                    areaFill.setAttribute('points', areaPoints);
+
+                    // Add circles and labels
+                    points.forEach((p, index) => {
+                        // Circle
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('cx', p.x);
+                        circle.setAttribute('cy', p.y);
+                        circle.setAttribute('r', '5');
+                        circle.setAttribute('fill', '#9333ea');
+                        circle.setAttribute('stroke', 'white');
+                        circle.setAttribute('stroke-width', '2');
+                        dataPointsGroup.appendChild(circle);
+
+                        // X-axis label
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('x', p.x);
+                        label.setAttribute('y', plotBottom + 20);
+                        label.setAttribute('font-size', '11');
+                        label.setAttribute('fill', '#6b7280');
+                        label.setAttribute('text-anchor', 'middle');
+                        label.textContent = p.label;
+                        dataPointsGroup.appendChild(label);
+
+                        // Value label
+                        const valueLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        valueLabel.setAttribute('x', p.x);
+                        valueLabel.setAttribute('y', p.y - 10);
+                        valueLabel.setAttribute('font-size', '12');
+                        valueLabel.setAttribute('fill', '#9333ea');
+                        valueLabel.setAttribute('text-anchor', 'middle');
+                        valueLabel.setAttribute('font-weight', '600');
+                        valueLabel.textContent = Math.round(p.score) + '%';
+                        dataPointsGroup.appendChild(valueLabel);
+                    });
+                })();
+                /*]]>*/
+            </script>
+        </div>
+    </div>
 </div>
-</body>
-</html>
