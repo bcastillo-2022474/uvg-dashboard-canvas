@@ -216,7 +216,7 @@ public class DashboardService {
         for (Assignment assignment : assignments) {
             if (assignment.pointsPossible != null) {
                 boolean isGraded = submissions.stream()
-                        .anyMatch(s -> s.assignmentId.equals(assignment.id) && s.score != null);
+                    .anyMatch(s -> s.assignmentId.equals(assignment.id) && s.score != null);
                 if (isGraded) {
                     gradedPointsPossible += assignment.pointsPossible;
                 }
@@ -225,8 +225,8 @@ public class DashboardService {
 
         // Normalize to percentage (like PredictionService) so all courses show on same scale
         double remainingPercentage = totalPossiblePoints > 0
-                ? ((totalPossiblePoints - gradedPointsPossible) / totalPossiblePoints) * 100
-                : 0.0;
+            ? ((totalPossiblePoints - gradedPointsPossible) / totalPossiblePoints) * 100
+            : 0.0;
 
         return new CourseCardData(courseWithGrades, recentGrades, categoryBreakdown, upcomingAssignments, trend, remainingPercentage);
     }

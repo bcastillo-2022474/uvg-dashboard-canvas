@@ -1,20 +1,22 @@
 package com.bestprograteam.canvas_dashboard.model.entities;
 
 import java.util.Date;
-import java.util.List;
 
 public class Course {
-    private String id;
-    private String name;
-    private String code;
-    private String status;
-    private String enrollmentType;
-    private Date startDate;
-    private Date endDate;
-    private float totalPoints;
-    private float currentGrade;
+    public String id;
+    public String name;
+    public String code;
+    public String status;
+    public String enrollmentType;
+    public Date startDate;
+    public Date endDate;
+    public float totalPoints;
+    public float currentGrade;
 
-    public Course(String id, String name, String code, String status, String enrollmentType, Date startDate, Date endDate, float totalPoints, float currentGrade) {
+    public Course() {}
+
+    public Course(String id, String name, String code, String status, String enrollmentType,
+                  Date startDate, Date endDate, float totalPoints, float currentGrade) {
         this.id = id;
         this.name = name;
         this.code = code;
@@ -26,26 +28,8 @@ public class Course {
         this.currentGrade = currentGrade;
     }
 
-    public boolean isActive() {
-        Date today = new Date();
-        return (today.after(startDate) && today.before(endDate));
-    }
-
-//    public List<GradingPeriod> getGradingPeriods() {
-//
-//        return null;
-//    }
-
-    public float calculateProgress() {
-        return totalPoints > 0 ? (currentGrade / totalPoints) * 100 : 0;
-    }
-
-    public Assignment getNextAssignment() {
-        return null;
-    }
-
-    public float getTotalPointsEarned() {
-        return currentGrade;
+    @Override
+    public String toString() {
+        return "Course{id='" + id + "', name='" + name + "', code='" + code + "'}";
     }
 }
-
