@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 500px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #3B82F6 var(--progress, 0%), #E5E7EB var(--progress, 0%));
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-black p-3 md:p-6 transition-colors duration-300">
+<div class="max-w-7xl mx-auto space-y-4">
+    <!-- Header - Mobile Friendly -->
+    <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+                <div class="h-12 w-12 md:h-14 md:w-14 ring-2 ring-blue-100 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-lg md:text-xl flex-shrink-0">
+                    <span th:text="${userInitials}">JD</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h1 class="text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
+                        Welcome back, <span th:text="${userName ?: 'Student'}">Student</span> 👋
+                    </h1>
+                    <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">All your course data in one place</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-2.5">
+                    <i id="theme-toggle-dark-icon" class="hidden h-4 w-4" data-lucide="moon"></i>
+                    <i id="theme-toggle-light-icon" class="hidden h-4 w-4" data-lucide="sun"></i>
+                </button>
+                <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Summary Widgets -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="shadow-sm border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-3 md:p-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="target" class="h-4 w-4 md:h-5 md:w-5 text-blue-600"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600">Overall</p>
+                    <p class="text-lg md:text-2xl font-bold text-blue-600" th:text="${#numbers.formatDecimal(dashboardData.summary.overallPercentage, 1, 1)} + '%'" ></p>
+                    <p class="text-xs text-gray-500">Semester</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="shadow-sm border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-3 md:p-4" th:with="gradedScore=${dashboardData.summary.totalGradedPercentage}">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="bar-chart-3" class="h-4 w-4 md:h-5 md:w-5"
+                   th:classappend="${gradedScore < 60 ? 'text-red-600' : (gradedScore <= 80 ? 'text-yellow-600' : 'text-green-600')}"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">Graded</p>
+                    <p class="text-lg md:text-2xl font-bold"
+                       th:classappend="${gradedScore < 60 ? 'text-red-600' : (gradedScore <= 80 ? 'text-yellow-600' : 'text-green-600')}"
+                       th:text="${#numbers.formatDecimal(gradedScore, 1, 1)} + '%'" ></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalGradedPointsPossible}" ></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="shadow-sm border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-3 md:p-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="h-4 w-4 md:h-5 md:w-5 text-purple-600"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">Completed</p>
+                    <p class="text-lg md:text-2xl font-bold text-purple-600" th:text="${dashboardData.summary.totalCompletedAssignments}" ></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">assignments</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="shadow-sm border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-3 md:p-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="alert-triangle" class="h-4 w-4 md:h-5 md:w-5 text-orange-600"></i>
+                <div>
+                    <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">Due Soon</p>
+                    <p class="text-lg md:text-2xl font-bold text-orange-600" th:text="${dashboardData.summary.upcomingAssignments}" ></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">this week</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Widgets Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Weekly Summary -->
+        <div class="shadow-sm border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg">
+            <div class="p-4 pb-3">
+                <h3 class="text-lg font-semibold flex items-center space-x-2">
+                    <i data-lucide="calendar" class="h-5 w-5 text-green-600"></i>
+                    <span>This Week</span>
+                </h3>
+            </div>
+            <div class="p-4 pt-0">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Tasks Completed</span>
+                        <span class="font-semibold"></span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Points Earned</span>
+                        <span class="font-semibold text-green-600"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predicted Final Grade -->
+        <div class="shadow-sm border-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-800/80 rounded-lg">
+            <div class="text-center p-4 pb-3">
+                <h3 class="text-lg font-semibold flex items-center justify-center space-x-2">
+                    <i data-lucide="graduation-cap" class="h-5 w-5 text-green-600"></i>
+                    <span>Predicted Grade</span>
+                </h3>
+            </div>
+            <div th:if="${predictionData.isPredictionAvailable()}" class="text-center p-4 pt-0" th:with="score=${predictionData.predictedScore}">
+                <div class="text-3xl font-bold mb-2"
+                     th:classappend="${score < 60 ? 'text-red-600' : (score <= 80 ? 'text-yellow-600' : 'text-green-600')}"
+                     th:text="${#numbers.formatDecimal(score, 1, 1)} + '%'">
+                </div>
+                <span class="text-xs font-medium px-2.5 py-0.5 rounded"
+                      th:classappend="${score < 60 ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' : (score <= 80 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300')}"
+                      th:text="'On Track for ' + ${predictionData.predictedLetterGrade}"></span>
+            </div>
+            <div th:if="${!predictionData.isPredictionAvailable()}" class="text-center p-4 pt-0">
+                <p class="text-sm text-gray-600 dark:text-gray-400 p-4">Not enough data to make a prediction.</p>
+            </div>
+        </div>
+
+        <!-- Points Summary -->
+        <div class="shadow-sm border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg">
+            <div class="p-4 pb-3">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Points Summary</h3>
+            </div>
+            <div class="p-4 pt-0 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Total Semester</span>
+                    <span class="font-semibold text-gray-800 dark:text-gray-200" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalSemesterPointsPossible}"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Graded Only</span>
+                    <span class="font-semibold text-green-600" th:text="${dashboardData.summary.totalGradedPoints} + '/' + ${dashboardData.summary.totalGradedPointsPossible}"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Remaining</span>
+                    <span class="font-semibold text-blue-600" th:text="${dashboardData.summary.totalUpcomingPoints}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+<!-- Dynamic Course Cards -->
+<div th:each="courseCard, iterStat : ${dashboardData.courseCards}"
+     class="shadow-sm border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white/90 dark:hover:bg-gray-800/90 hover:scale-101 transition-all duration-200 rounded-lg">
+
+    <!-- Course Header -->
+    <div class="p-4 pb-3">
+        <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded-full" th:style="'background-color: ' + ${courseCard.courseWithGrades.course.courseColor ?: '#3B82F6'}"></div>
+                <div>
+                    <h3 class="font-semibold text-sm md:text-base text-gray-900 dark:text-gray-100 leading-tight"
+                        th:text="${courseCard.courseWithGrades.course.name}"></h3>
+                    <p class="text-xs text-gray-600 dark:text-gray-400"
+                       th:text="${courseCard.courseWithGrades.course.code}"></p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm px-2 py-1 rounded"
+                      th:text="${courseCard.courseWithGrades.enrollment.currentGrade}"></span>
+                <div class="flex items-center mt-1">
+                    <span class="text-lg font-bold"
+                          th:classappend="${courseCard.courseWithGrades.enrollment.currentScore < 60 ? 'text-red-600' : (courseCard.courseWithGrades.enrollment.currentScore <= 80 ? 'text-yellow-600' : 'text-green-600')}"
+                          th:text="${#numbers.formatDecimal(courseCard.courseWithGrades.enrollment.currentScore, 1, 1)} + '%'"></span>
+                    <i th:data-lucide="${courseCard.trend == 'up' ? 'trending-up' : (courseCard.trend == 'down' ? 'trending-down' : 'minus')}"
+                       th:class="${'h-3 w-3 ml-1 ' + (courseCard.trend == 'up' ? 'text-green-500' : (courseCard.trend == 'down' ? 'text-red-500' : 'text-gray-400'))}"
+                       class="h-3 w-3 text-green-500 ml-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-4 pt-0 space-y-4">
+        <!-- Points Summary (removed semester points to simplify) -->
+        <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+                <p class="text-blue-600 font-medium">Current Score</p>
+                <p class="font-bold text-blue-800 dark:text-blue-300"
+                   th:text="${#numbers.formatDecimal(courseCard.courseWithGrades.enrollment.currentScore, 1, 1)} + '%'" ></p>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700/50 p-2 rounded">
+                <p class="text-gray-600 dark:text-gray-400 font-medium">Remaining</p>
+                <p class="font-bold text-gray-800 dark:text-gray-200" th:text="${#numbers.formatDecimal(courseCard.remainingPoints, 1, 0)} + '%'"></p>
+            </div>
+        </div>
+
+        <!-- Recent Grades -->
+        <div th:if="${!courseCard.recentGrades.isEmpty()}">
+            <button th:onclick="'toggleGrades(\'course-' + ${iterStat.index} + '\')'"
+                    class="w-full justify-between p-2 h-auto text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded flex items-center">
+                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300"
+                      th:text="'Recent Grades (' + ${courseCard.recentGrades.size()} + ')'"></span>
+                <i data-lucide="chevron-down" class="h-3 w-3 text-gray-600 dark:text-gray-400" th:id="'course-' + ${iterStat.index} + '-chevron'"></i>
+            </button>
+            <div th:id="'course-' + ${iterStat.index} + '-grades'" class="collapsible-content space-y-1 mt-2">
+                <div th:each="recentGrade : ${courseCard.recentGrades}"
+                     class="flex justify-between items-center text-xs bg-gray-50 dark:bg-gray-700/50 p-2 rounded">
+                    <div class="flex-1 mr-2">
+                        <span class="truncate block text-gray-800 dark:text-gray-200" th:text="${recentGrade.assignment.name}"></span>
+                        <span class="text-gray-500 dark:text-gray-400"
+                              th:text="${recentGrade.submission.gradedAt != null ? #temporals.format(recentGrade.submission.gradedAt, 'MMM dd') : 'N/A'}"></span>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-semibold text-green-600"
+                              th:text="${recentGrade.submission.score != null and recentGrade.assignment.pointsPossible > 0 ? #numbers.formatDecimal((recentGrade.submission.score / recentGrade.assignment.pointsPossible) * 100, 1, 0) + '%' : 'N/A'}"></span>
+                        <p class="text-gray-500 dark:text-gray-400"
+                           th:text="${recentGrade.submission.score != null ? recentGrade.submission.score : '-'} + '/' + ${recentGrade.assignment.pointsPossible}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div th:if="${!courseCard.categoryBreakdown.isEmpty()}">
+            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Grade Categories</h4>
+            <div class="space-y-1">
+                <div th:each="category : ${courseCard.categoryBreakdown}"
+                     class="flex justify-between items-center text-xs">
+                    <span class="text-gray-600 dark:text-gray-400"
+                          th:text="${category.group.name} + ' (' + ${#numbers.formatDecimal(category.group.groupWeight, 1, 0)} + '%)'"></span>
+                    <div class="text-right">
+                        <span class="font-medium text-gray-800 dark:text-gray-200"
+                              th:text="${#numbers.formatDecimal(category.currentScore, 1, 0)} + '%'" ></span>
+                        <p class="text-gray-500 dark:text-gray-400"
+                           th:text="${category.pointsEarned} + '/' + ${category.pointsTotal}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Assignments -->
+        <div th:if="${!courseCard.upcomingAssignments.isEmpty()}">
+            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Due Soon</h4>
+            <div class="space-y-1">
+                <div th:each="assignment : ${courseCard.upcomingAssignments}"
+                     class="flex items-center justify-between text-xs bg-amber-50 dark:bg-amber-900/30 p-2 rounded border border-amber-200 dark:border-amber-700">
+                    <div class="flex items-center space-x-1">
+                        <i data-lucide="file-text" class="h-3 w-3 text-amber-700 dark:text-amber-400"></i>
+                        <span class="truncate" th:text="${assignment.name}"></span>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-amber-800"
+                           th:text="${assignment.dueAt != null ? #temporals.format(assignment.dueAt, 'MMM dd') : 'No due date'}"></p>
+                        <p class="text-amber-600"
+                           th:text="${assignment.pointsPossible} + ' pts'"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No upcoming assignments message -->
+        <div th:if="${courseCard.upcomingAssignments.isEmpty()}"
+             class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 p-2 rounded">
+            <div class="flex items-center space-x-1">
+                <i data-lucide="check-circle" class="h-3 w-3 text-green-500"></i>
+                <span class="text-xs text-green-800 dark:text-green-300 font-medium">No upcoming assignments!</span>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- Grade Progression Chart -->
+    <div class="shadow-sm border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg" th:if="${predictionData.isPredictionAvailable()}">
+        <div class="p-4 pb-3">
+            <h3 class="text-lg font-semibold flex items-center space-x-2">
+                <i data-lucide="trending-up" class="h-5 w-5 text-purple-600"></i>
+                <span class="text-gray-900 dark:text-gray-100">Overall Grade Progression</span>
+            </h3>
+            <p class="text-sm text-gray-600">Your academic performance trend over time</p>
+        </div>
+        <div class="p-4 pt-0 overflow-x-auto">
+            <svg id="progressionChart" class="h-[300px]" preserveAspectRatio="none">
+                <!-- Gradient for area under line -->
+                <defs>
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9333ea;stop-opacity:0.2" />
+                        <stop offset="100%" style="stop-color:#9333ea;stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Grid lines (will be added dynamically) -->
+                <g id="gridLines"></g>
+
+                <!-- Y-axis labels (will be added dynamically) -->
+                <g id="yAxisLabels"></g>
+
+                <!-- Area fill -->
+                <polygon id="areaFill" fill="url(#lineGradient)"/>
+
+                <!-- The line -->
+                <polyline id="trendLine" stroke="#9333ea" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+                <!-- Data points -->
+                <g id="dataPoints"></g>
+            </svg>
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                function drawProgressionChart() {
+                    const data = /*[[${predictionData.gradeProgression}]]*/ [];
+                    if (!data || data.length === 0) return;
+
+                    const svg = document.getElementById('progressionChart');
+                    // Clear previous chart content before redrawing
+                    svg.innerHTML = `
+                        <defs>
+                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#9333ea;stop-opacity:0.2" />
+                                <stop offset="100%" style="stop-color:#9333ea;stop-opacity:0" />
+                            </linearGradient>
+                        </defs>
+                        <g id="gridLines"></g>
+                        <g id="yAxisLabels"></g>
+                        <polygon id="areaFill" fill="url(#lineGradient)"/>
+                        <polyline id="trendLine" stroke="#9333ea" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <g id="dataPoints"></g>
+                    `;
+
+                    const trendLine = document.getElementById('trendLine');
+                    const areaFill = document.getElementById('areaFill');
+                    const dataPointsGroup = document.getElementById('dataPoints');
+                    const gridLines = document.getElementById('gridLines');
+                    const yAxisLabels = document.getElementById('yAxisLabels');
+
+                    // Theme-aware colors
+                    const isDarkMode = document.documentElement.classList.contains('dark');
+                    const gridColor = isDarkMode ? '#374151' : '#e5e7eb'; // gray-700 vs gray-200
+                    const textColor = isDarkMode ? '#9ca3af' : '#6b7280'; // gray-400 vs gray-500
+
+                    // Configuration
+                    const leftMargin = 60;
+                    const rightMargin = 20;
+                    const topMargin = 30;
+                    const bottomMargin = 40;
+                    const pointSpacing = 80; // More space between points for readability
+                    const chartHeight = 300;
+
+                    // Calculate dynamic width based on number of data points
+                    const chartWidth = leftMargin + (data.length * pointSpacing) + rightMargin;
+                    svg.setAttribute('width', chartWidth);
+                    svg.setAttribute('height', chartHeight);
+                    svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`);
+
+                    // Find min and max values with padding
+                    const scores = data.map(d => d.score);
+                    const minScore = Math.max(0, Math.min(...scores) - 5); // Don't go below 0, add 5% padding
+                    const maxScore = Math.min(100, Math.max(...scores) + 5); // Don't go above 100, add 5% padding
+                    const scoreRange = maxScore - minScore;
+
+                    // Chart dimensions
+                    const plotHeight = chartHeight - topMargin - bottomMargin;
+                    const plotWidth = chartWidth - leftMargin - rightMargin;
+                    const plotTop = topMargin;
+                    const plotBottom = chartHeight - bottomMargin;
+
+                    // Create 5 grid lines and labels
+                    for (let i = 0; i <= 4; i++) {
+                        const value = minScore + (scoreRange * i / 4);
+                        const y = plotBottom - (plotHeight * i / 4);
+
+                        // Grid line
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', leftMargin);
+                        line.setAttribute('y1', y);
+                        line.setAttribute('x2', chartWidth - rightMargin);
+                        line.setAttribute('y2', y);
+                        line.setAttribute('stroke', gridColor);
+                        line.setAttribute('stroke-width', '1');
+                        gridLines.appendChild(line);
+
+                        // Y-axis label
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('x', leftMargin - 10);
+                        label.setAttribute('y', y + 4);
+                        label.setAttribute('font-size', '12');
+                        label.setAttribute('fill', textColor);
+                        label.setAttribute('text-anchor', 'end');
+                        label.textContent = Math.round(value) + '%';
+                        yAxisLabels.appendChild(label);
+                    }
+
+                    // Calculate coordinates for data points
+                    const points = [];
+                    data.forEach((point, index) => {
+                        const x = leftMargin + (index * pointSpacing);
+                        const normalizedScore = (point.score - minScore) / scoreRange;
+                        const y = plotBottom - (normalizedScore * plotHeight);
+                        points.push({ x, y, label: point.label, score: point.score });
+                    });
+
+                    // Build polyline points string
+                    const linePoints = points.map(p => `${p.x},${p.y}`).join(' ');
+                    trendLine.setAttribute('points', linePoints);
+
+                    // Build polygon for filled area
+                    const areaPoints = `${leftMargin},${plotBottom} ${linePoints} ${points[points.length-1].x},${plotBottom}`;
+                    areaFill.setAttribute('points', areaPoints);
+
+                    // Add circles and labels
+                    points.forEach((p, index) => {
+                        // Circle
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('cx', p.x);
+                        circle.setAttribute('cy', p.y);
+                        circle.setAttribute('r', '5');
+                        circle.setAttribute('fill', '#9333ea'); // purple-600
+                        circle.setAttribute('stroke', 'white');
+                        circle.setAttribute('stroke-width', '2');
+                        dataPointsGroup.appendChild(circle);
+
+                        // X-axis label
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('x', p.x);
+                        label.setAttribute('y', plotBottom + 20);
+                        label.setAttribute('font-size', '11');
+                        label.setAttribute('fill', textColor);
+                        label.setAttribute('text-anchor', 'middle');
+                        label.textContent = p.label;
+                        dataPointsGroup.appendChild(label);
+
+                        // Value label
+                        const valueLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        valueLabel.setAttribute('x', p.x);
+                        valueLabel.setAttribute('y', p.y - 10);
+                        valueLabel.setAttribute('font-size', '12');
+                        valueLabel.setAttribute('fill', '#9333ea'); // purple-600
+                        valueLabel.setAttribute('text-anchor', 'middle');
+                        valueLabel.setAttribute('font-weight', '600');
+                        valueLabel.textContent = Math.round(p.score) + '%';
+                        dataPointsGroup.appendChild(valueLabel);
+                    });
+                }
+
+                // Initial draw on page load
+                drawProgressionChart();
+                /*]]>*/
+            </script>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Theme toggle script
+  const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+  const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+  // Change the icons inside the button based on previous settings
+  if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      themeToggleLightIcon.classList.remove('hidden');
+      document.documentElement.classList.add('dark');
+  } else {
+      themeToggleDarkIcon.classList.remove('hidden');
+      document.documentElement.classList.remove('dark')
+  }
+
+  const themeToggleBtn = document.getElementById('theme-toggle');
+
+  themeToggleBtn.addEventListener('click', function() {
+      // toggle icons inside button
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+
+      // if set via local storage previously
+      if (localStorage.getItem('color-theme')) {
+          if (localStorage.getItem('color-theme') === 'light') {
+              document.documentElement.classList.add('dark');
+              localStorage.setItem('color-theme', 'dark');
+          } else {
+              document.documentElement.classList.remove('dark');
+              localStorage.setItem('color-theme', 'light');
+          }
+      } else { // if NOT set via local storage previously
+          if (document.documentElement.classList.contains('dark')) {
+              document.documentElement.classList.remove('dark');
+              localStorage.setItem('color-theme', 'light');
+          } else {
+              document.documentElement.classList.add('dark');
+              localStorage.setItem('color-theme', 'dark');
+          }
+      }
+      // Redraw the chart with the new theme colors without reloading the page
+      drawProgressionChart();
+  });
+
+  // Toggle grades function
+  function toggleGrades(courseId) {
+    const gradesDiv = document.getElementById(courseId + '-grades');
+    const chevron = document.getElementById(courseId + '-chevron');
+
+    if (gradesDiv.classList.contains('expanded')) {
+      gradesDiv.classList.remove('expanded');
+      chevron.setAttribute('data-lucide', 'chevron-down');
+    } else {
+      gradesDiv.classList.add('expanded');
+      chevron.setAttribute('data-lucide', 'chevron-up');
+    }
+
+    // Re-initialize icons after changing
+    lucide.createIcons();
+  }
+
+  // Initialize Lucide icons on page load
+  lucide.createIcons();
+</script>
+</body>
+</html>

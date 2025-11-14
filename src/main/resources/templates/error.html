@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Canvas Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
+<div class="max-w-md w-full">
+    <div class="bg-white/70 backdrop-blur-sm rounded-lg shadow-lg p-8 text-center">
+        <!-- Error Icon -->
+        <div class="mx-auto h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mb-6">
+            <i data-lucide="alert-circle" class="h-10 w-10 text-red-600"></i>
+        </div>
+
+        <!-- Error Message -->
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Oops! Something went wrong</h1>
+        <p class="text-gray-600 mb-2">We encountered an unexpected error while processing your request.</p>
+
+        <!-- Error Details (if available) -->
+        <div th:if="${status}" class="bg-red-50 border border-red-200 rounded-md p-3 mb-6 text-left">
+            <p class="text-sm text-red-800">
+                <span class="font-semibold">Status:</span> <span th:text="${status}">500</span>
+            </p>
+            <p th:if="${error}" class="text-sm text-red-800 mt-1">
+                <span class="font-semibold">Error:</span> <span th:text="${error}">Internal Server Error</span>
+            </p>
+            <p th:if="${message}" class="text-sm text-red-700 mt-1">
+                <span class="font-semibold">Message:</span> <span th:text="${message}">An error occurred</span>
+            </p>
+            <p th:if="${timestamp}" class="text-xs text-red-600 mt-2">
+                <span th:text="${timestamp}">2025-01-01 00:00:00</span>
+            </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-2">
+            <a href="/dashboard" class="block w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-md font-medium transition duration-150 ease-in-out">
+                Return to Dashboard
+            </a>
+            <button onclick="window.history.back()" class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-md font-medium transition duration-150 ease-in-out">
+                Go Back
+            </button>
+        </div>
+
+        <!-- Support Info -->
+        <p class="text-xs text-gray-500 mt-6">
+            If this problem persists, please contact support.
+        </p>
+    </div>
+</div>
+
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+</script>
+</body>
+</html>
