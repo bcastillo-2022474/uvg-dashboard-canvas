@@ -12,11 +12,13 @@ public class Course {
     public Date endDate;
     public float totalPoints;
     public float currentGrade;
+    public String courseColor;
+    
 
     public Course() {}
 
     public Course(String id, String name, String code, String status, String enrollmentType,
-                  Date startDate, Date endDate, float totalPoints, float currentGrade) {
+                  Date startDate, Date endDate, float totalPoints, float currentGrade, String courseColor) {
         this.id = id;
         this.name = name;
         this.code = code;
@@ -26,6 +28,7 @@ public class Course {
         this.endDate = endDate;
         this.totalPoints = totalPoints;
         this.currentGrade = currentGrade;
+        this.courseColor = courseColor;
     }
 
     @Override

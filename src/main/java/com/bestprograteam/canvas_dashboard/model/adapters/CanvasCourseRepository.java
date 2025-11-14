@@ -91,6 +91,7 @@ public class CanvasCourseRepository implements CourseRepository {
             String name = (String) data.get("name");
             String courseCode = (String) data.get("course_code");
             String workflowState = (String) data.get("workflow_state");
+            String courseColor = "";
 
             String enrollmentType = "StudentEnrollment";
             Date startDate = new Date(System.currentTimeMillis() - 90L * 24 * 60 * 60 * 1000);
@@ -99,7 +100,7 @@ public class CanvasCourseRepository implements CourseRepository {
             float currentGrade = 0f;
 
             return new Course(id, name, courseCode, workflowState, enrollmentType,
-                    startDate, endDate, totalPoints, currentGrade);
+                    startDate, endDate, totalPoints, currentGrade, courseColor);
         } catch (Exception e) {
             System.err.println("Error mapping course: " + e.getMessage());
             return null;
